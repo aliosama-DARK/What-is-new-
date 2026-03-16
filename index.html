@@ -1,80 +1,244 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-<title>What is New?</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>What is New?</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<style>
-body{
-font-family: Arial;
-background-color:#d3d3d3;
-text-align:center;
-margin-top:50px;
-}
+    body {
+      background-color: #d1d5db;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
 
-h1{
-font-size:40px;
-}
+    h1 {
+      font-size: 2.5rem;
+      color: #1f2937;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
 
-button{
-background:black;
-color:white;
-padding:15px 30px;
-font-size:20px;
-border:none;
-cursor:pointer;
-border-radius:10px;
-}
+    p.subtitle {
+      color: #6b7280;
+      margin-bottom: 30px;
+      font-size: 0.95rem;
+    }
 
-button:hover{
-background:#333;
-}
+    #fetchBtn {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
 
-#news{
-display:none;
-margin-top:30px;
-background:white;
-padding:20px;
-border-radius:10px;
-width:70%;
-margin-left:auto;
-margin-right:auto;
-}
-</style>
+    #fetchBtn:hover {
+      background-color: #2563eb;
+      transform: scale(1.05);
+    }
+
+    #fetchBtn:disabled {
+      background-color: #93c5fd;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #status {
+      margin-top: 15px;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+
+    #news-container {
+      margin-top: 30px;
+      width: 100%;
+      max-width: 750px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .news-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+      border-right: 5px solid #3b82f6;
+    }
+
+    .news-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .news-source {
+      font-size: 0.75rem;
+      color: white;
+      background-color: #3b82f6;
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .news-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .news-title a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .news-title a:hover {
+      color: #2563eb;
+    }
+
+    .news-meta {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .no-news {
+      text-align: center;
+      color: #6b7280;
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      font-size: 1rem;
+    }
+  </style>
 </head>
-
 <body>
 
-<h1>🌍 What is New?</h1>
+  <h1>📰 What is New?</h1>
+  <p class="subtitle">أحدث الأخبار من BBC • Reuters • Google News — آخر 12 ساعة</p>
 
-<p>Click the button to see the latest news</p>
+  <button id="fetchBtn" onclick="fetchNews()">🔍 What is New?</button>
+  <p id="status"></p>
 
-<button onclick="showNews()">What is New?</button>
+  <div id="news-container"></div>
 
-<div id="news">
+  <script>
+    // مصادر RSS عبر rss2json API (مجاني ولا يحتاج مفتاح للاستخدام الأساسي)
+    const SOURCES = [
+      {
+        name: "BBC News",
+        url: "https://feeds.bbci.co.uk/news/world/rss.xml",
+        color: "#b91c1c"
+      },
+      {
+        name: "Reuters",
+        url: "https://feeds.reuters.com/reuters/topNews",
+        color: "#0369a1"
+      },
+      {
+        name: "Google News",
+        url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
+        color: "#16a34a"
+      }
+    ];
 
-<h2>📰 News 1</h2>
-<p>Put the news summary here.</p>
-<a href="#">Source</a>
+    const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
 
-<hr>
+    async function fetchNews() {
+      const btn = document.getElementById("fetchBtn");
+      const status = document.getElementById("status");
+      const container = document.getElementById("news-container");
 
-<h2>📰 News 2</h2>
-<p>Put the news summary here.</p>
-<a href="#">Source</a>
+      btn.disabled = true;
+      btn.textContent = "⏳ جاري التحميل...";
+      status.textContent = "";
+      container.innerHTML = "";
 
-<hr>
+      const now = new Date();
+      const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
 
-<h2>📰 News 3</h2>
-<p>Put the news summary here.</p>
-<a href="#">Source</a>
+      let allNews = [];
 
-</div>
+      for (const source of SOURCES) {
+        try {
+          const res = await fetch(`${RSS2JSON}${encodeURIComponent(source.url)}&count=20`);
+          const data = await res.json();
 
-<script>
-function showNews(){
-document.getElementById("news").style.display="block";
-}
-</script>
+          if (data.status === "ok" && data.items) {
+            const filtered = data.items
+              .filter(item => {
+                const pubDate = new Date(item.pubDate);
+                return pubDate >= twelveHoursAgo;
+              })
+              .slice(0, 5)
+              .map(item => ({
+                title: item.title,
+                link: item.link,
+                pubDate: new Date(item.pubDate),
+                source: source.name,
+                color: source.color
+              }));
+
+            allNews = allNews.concat(filtered);
+          }
+        } catch (err) {
+          console.warn(`فشل جلب أخبار ${source.name}:`, err);
+        }
+      }
+
+      // ترتيب حسب الأحدث
+      allNews.sort((a, b) => b.pubDate - a.pubDate);
+
+      // أخذ أحدث 5 فقط
+      const top5 = allNews.slice(0, 5);
+
+      if (top5.length === 0) {
+        container.innerHTML = `<div class="no-news">😕 لا توجد أخبار خلال آخر 12 ساعة حالياً.<br>جرب مرة أخرى لاحقاً.</div>`;
+      } else {
+        top5.forEach(news => {
+          const timeAgo = getTimeAgo(news.pubDate);
+          const card = document.createElement("div");
+          card.className = "news-card";
+          card.style.borderRightColor = news.color;
+          card.innerHTML = `
+            <span class="news-source" style="background-color:${news.color}">${news.source}</span>
+            <div class="news-title">
+              <a href="${news.link}" target="_blank" rel="noopener">${news.title}</a>
+            </div>
+            <div class="news-meta">🕐 ${timeAgo}</div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      status.textContent = `✅ تم جلب ${top5.length} خبر من آخر 12 ساعة`;
+      btn.disabled = false;
+      btn.textContent = "🔄 تحديث الأخبار";
+    }
+
+    function getTimeAgo(date) {
+      const diff = Math.floor((new Date() - date) / 60000);
+      if (diff < 60) return `منذ ${diff} دقيقة`;
+      const hours = Math.floor(diff / 60);
+      return `منذ ${hours} ساعة`;
+    }
+  </script>
 
 </body>
 </html>
