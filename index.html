@@ -63,8 +63,23 @@
       font-size: 0.9rem;
     }
 
+    /* ✅ بنر تنبيه "لا يوجد أخبار جديدة" */
+    #old-news-banner {
+      display: none;
+      margin-top: 20px;
+      background-color: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      color: #92400e;
+      max-width: 750px;
+      width: 100%;
+      text-align: center;
+    }
+
     #news-container {
-      margin-top: 30px;
+      margin-top: 16px;
       width: 100%;
       max-width: 750px;
       display: flex;
@@ -117,15 +132,6 @@
       font-size: 0.8rem;
       color: #9ca3af;
     }
-
-    .no-news {
-      text-align: center;
-      color: #6b7280;
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      font-size: 1rem;
-    }
   </style>
 </head>
 <body>
@@ -136,10 +142,14 @@
   <button id="fetchBtn" onclick="fetchNews()">🔍 What is New?</button>
   <p id="status"></p>
 
+  <!-- ✅ بنر الأخبار القديمة -->
+  <div id="old-news-banner">
+    ⚠️ لا توجد أخبار جديدة خلال آخر 12 ساعة — يتم عرض أحدث الأخبار المتاحة
+  </div>
+
   <div id="news-container"></div>
 
   <script>
-    // مصادر RSS عبر rss2json API (مجاني ولا يحتاج مفتاح للاستخدام الأساسي)
     const SOURCES = [
       {
         name: "BBC News",
@@ -164,16 +174,19 @@
       const btn = document.getElementById("fetchBtn");
       const status = document.getElementById("status");
       const container = document.getElementById("news-container");
+      const banner = document.getElementById("old-news-banner");
 
       btn.disabled = true;
       btn.textContent = "⏳ جاري التحميل...";
       status.textContent = "";
       container.innerHTML = "";
+      banner.style.display = "none";
 
       const now = new Date();
       const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
 
       let allNews = [];
+      let allOldNews = [];
 
       for (const source of SOURCES) {
         try {
@@ -181,37 +194,53 @@
           const data = await res.json();
 
           if (data.status === "ok" && data.items) {
-            const filtered = data.items
-              .filter(item => {
-                const pubDate = new Date(item.pubDate);
-                return pubDate >= twelveHoursAgo;
-              })
-              .slice(0, 5)
-              .map(item => ({
+            data.items.forEach(item => {
+              const pubDate = new Date(item.pubDate);
+              const newsObj = {
                 title: item.title,
                 link: item.link,
-                pubDate: new Date(item.pubDate),
+                pubDate,
                 source: source.name,
                 color: source.color
-              }));
+              };
 
-            allNews = allNews.concat(filtered);
+              if (pubDate >= twelveHoursAgo) {
+                allNews.push(newsObj);      // ✅ أخبار جديدة
+              } else {
+                allOldNews.push(newsObj);   // 🗂️ أخبار قديمة
+              }
+            });
           }
         } catch (err) {
           console.warn(`فشل جلب أخبار ${source.name}:`, err);
         }
       }
 
-      // ترتيب حسب الأحدث
+      // ترتيب من الأحدث
       allNews.sort((a, b) => b.pubDate - a.pubDate);
+      allOldNews.sort((a, b) => b.pubDate - a.pubDate);
 
-      // أخذ أحدث 5 فقط
-      const top5 = allNews.slice(0, 5);
+      let finalNews = [];
+      let isOld = false;
 
-      if (top5.length === 0) {
-        container.innerHTML = `<div class="no-news">😕 لا توجد أخبار خلال آخر 12 ساعة حالياً.<br>جرب مرة أخرى لاحقاً.</div>`;
+      if (allNews.length > 0) {
+        // ✅ في أخبار جديدة
+        finalNews = allNews.slice(0, 5);
       } else {
-        top5.forEach(news => {
+        // ⚠️ مافيش أخبار جديدة → اجيب القديمة
+        finalNews = allOldNews.slice(0, 5);
+        isOld = true;
+      }
+
+      if (finalNews.length === 0) {
+        container.innerHTML = `<div style="text-align:center;background:white;border-radius:16px;padding:30px;color:#6b7280;">😕 لا توجد أخبار متاحة حالياً، حاول لاحقاً.</div>`;
+      } else {
+        // ✅ إظهار البنر لو الأخبار قديمة
+        if (isOld) {
+          banner.style.display = "block";
+        }
+
+        finalNews.forEach(news => {
           const timeAgo = getTimeAgo(news.pubDate);
           const card = document.createElement("div");
           card.className = "news-card";
@@ -227,7 +256,10 @@
         });
       }
 
-      status.textContent = `✅ تم جلب ${top5.length} خبر من آخر 12 ساعة`;
+      status.textContent = isOld
+        ? `📂 يتم عرض ${finalNews.length} خبر قديم`
+        : `✅ تم جلب ${finalNews.length} خبر من آخر 12 ساعة`;
+
       btn.disabled = false;
       btn.textContent = "🔄 تحديث الأخبار";
     }
@@ -236,7 +268,9 @@
       const diff = Math.floor((new Date() - date) / 60000);
       if (diff < 60) return `منذ ${diff} دقيقة`;
       const hours = Math.floor(diff / 60);
-      return `منذ ${hours} ساعة`;
+      if (hours < 24) return `منذ ${hours} ساعة`;
+      const days = Math.floor(hours / 24);
+      return `منذ ${days} يوم`;
     }
   </script>
 
