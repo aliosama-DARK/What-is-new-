@@ -1,31 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>My News Site</title>
+<title>What is New?</title>
+
+<style>
+body{
+font-family: Arial;
+background-color:#d3d3d3;
+text-align:center;
+margin-top:50px;
+}
+
+h1{
+font-size:40px;
+}
+
+button{
+background:black;
+color:white;
+padding:15px 30px;
+font-size:20px;
+border:none;
+cursor:pointer;
+border-radius:10px;
+}
+
+button:hover{
+background:#333;
+}
+
+#news{
+display:none;
+margin-top:30px;
+background:white;
+padding:20px;
+border-radius:10px;
+width:70%;
+margin-left:auto;
+margin-right:auto;
+}
+</style>
 </head>
 
-<body style="font-family:Arial;max-width:800px;margin:auto">
+<body>
 
-<h1>🌍 My News Website</h1>
-<p>Latest world news</p>
+<h1>🌍 What is New?</h1>
 
-<hr>
+<p>Click the button to see the latest news</p>
 
-<h2>خبر رقم 1</h2>
-<p>اكتب ملخص الخبر هنا</p>
-<a href="#">رابط الخبر</a>
+<button onclick="showNews()">What is New?</button>
 
-<hr>
+<div id="news">
 
-<h2>خبر رقم 2</h2>
-<p>اكتب ملخص الخبر هنا</p>
-<a href="#">رابط الخبر</a>
+<h2>📰 News 1</h2>
+<p>Put the news summary here.</p>
+<a href="#">Source</a>
 
 <hr>
 
-<h2>خبر رقم 3</h2>
-<p>اكتب ملخص الخبر هنا</p>
-<a href="#">رابط الخبر</a>
+<h2>📰 News 2</h2>
+<p>Put the news summary here.</p>
+<a href="#">Source</a>
+
+<hr>
+
+<h2>📰 News 3</h2>
+<p>Put the news summary here.</p>
+<a href="#">Source</a>
+
+</div>
+
+<script>
+function showNews(){
+document.getElementById("news").style.display="block";
+}
+</script>
 
 </body>
 </html>
