@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>What is New?</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background-color: #d1d5db;
@@ -25,7 +21,6 @@
       font-size: 2.5rem;
       color: #1f2937;
       margin-bottom: 10px;
-      letter-spacing: 1px;
     }
 
     p.subtitle {
@@ -43,24 +38,17 @@
       border-radius: 50px;
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
-      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 4px 15px rgba(59,130,246,0.4);
     }
 
-    #fetchBtn:hover {
-      background-color: #2563eb;
-      transform: scale(1.05);
-    }
-
-    #fetchBtn:disabled {
-      background-color: #93c5fd;
-      cursor: not-allowed;
-      transform: none;
-    }
+    #fetchBtn:hover { background-color: #2563eb; transform: scale(1.05); }
+    #fetchBtn:disabled { background-color: #93c5fd; cursor: not-allowed; transform: none; }
 
     #status {
       margin-top: 15px;
       color: #374151;
       font-size: 0.9rem;
+      min-height: 20px;
     }
 
     #news-container {
@@ -81,9 +69,7 @@
       border-right: 5px solid #3b82f6;
     }
 
-    .news-card:hover {
-      transform: translateY(-3px);
-    }
+    .news-card:hover { transform: translateY(-3px); }
 
     .news-source {
       font-size: 0.75rem;
@@ -108,13 +94,17 @@
       color: inherit;
     }
 
-    .news-title a:hover {
-      color: #2563eb;
-    }
+    .news-title a:hover { color: #2563eb; }
 
-    .news-meta {
-      font-size: 0.8rem;
-      color: #9ca3af;
+    .news-meta { font-size: 0.8rem; color: #9ca3af; }
+
+    .error-card {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: #991b1b;
+      font-size: 0.9rem;
     }
   </style>
 </head>
@@ -125,10 +115,12 @@
 
   <button id="fetchBtn" onclick="fetchNews()">🔍 What is New?</button>
   <p id="status"></p>
-
   <div id="news-container"></div>
 
   <script>
+    // ✅ CORS Proxy بديل موثوق
+    const PROXY = "https://corsproxy.io/?";
+
     const SOURCES = [
       {
         name: "BBC News",
@@ -136,69 +128,98 @@
         color: "#b91c1c"
       },
       {
-        name: "Reuters",
-        url: "https://feeds.reuters.com/reuters/topNews",
-        color: "#0369a1"
-      },
-      {
         name: "Google News",
         url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
         color: "#16a34a"
+      },
+      {
+        name: "Al Jazeera",
+        url: "https://www.aljazeera.com/xml/rss/all.xml",
+        color: "#92400e"
       }
     ];
 
-    const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
+    // ✅ تحليل RSS بدون مكتبة خارجية
+    function parseRSS(xmlText, sourceName, sourceColor) {
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlText, "text/xml");
+      const items = xml.querySelectorAll("item");
+      const result = [];
+
+      items.forEach(item => {
+        const title = item.querySelector("title")?.textContent?.trim();
+        const link  = item.querySelector("link")?.textContent?.trim()
+                   || item.querySelector("link")?.getAttribute("href")?.trim();
+        const pubDate = item.querySelector("pubDate")?.textContent?.trim();
+
+        if (title && link) {
+          result.push({
+            title,
+            link,
+            pubDate: pubDate ? new Date(pubDate) : new Date(0),
+            source: sourceName,
+            color: sourceColor
+          });
+        }
+      });
+
+      return result;
+    }
+
+    async function fetchFromSource(source) {
+      const url = PROXY + encodeURIComponent(source.url);
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      return parseRSS(text, source.name, source.color);
+    }
 
     async function fetchNews() {
-      const btn = document.getElementById("fetchBtn");
-      const status = document.getElementById("status");
+      const btn       = document.getElementById("fetchBtn");
+      const status    = document.getElementById("status");
       const container = document.getElementById("news-container");
 
-      btn.disabled = true;
+      btn.disabled    = true;
       btn.textContent = "⏳ جاري التحميل...";
       status.textContent = "";
       container.innerHTML = "";
 
+      // ✅ جلب كل المصادر في نفس الوقت (Promise.allSettled)
+      const results = await Promise.allSettled(
+        SOURCES.map(s => fetchFromSource(s))
+      );
+
       let allNews = [];
+      let failedSources = [];
 
-      for (const source of SOURCES) {
-        try {
-          const res = await fetch(`${RSS2JSON}${encodeURIComponent(source.url)}&count=20`);
-          const data = await res.json();
-
-          if (data.status === "ok" && data.items) {
-            data.items.forEach(item => {
-              allNews.push({
-                title: item.title,
-                link: item.link,
-                pubDate: new Date(item.pubDate),
-                source: source.name,
-                color: source.color
-              });
-            });
-          }
-        } catch (err) {
-          console.warn(`فشل جلب أخبار ${source.name}:`, err);
+      results.forEach((result, i) => {
+        if (result.status === "fulfilled") {
+          allNews = allNews.concat(result.value);
+        } else {
+          failedSources.push(SOURCES[i].name);
+          console.warn(`❌ ${SOURCES[i].name}:`, result.reason);
         }
-      }
+      });
 
-      // ✅ ترتيب من الأحدث بدون أي فلترة
+      // ✅ ترتيب من الأحدث بدون فلترة
       allNews.sort((a, b) => b.pubDate - a.pubDate);
-
       const top5 = allNews.slice(0, 5);
 
       if (top5.length === 0) {
         container.innerHTML = `
-          <div style="text-align:center;background:white;border-radius:16px;padding:30px;color:#6b7280;">
-            😕 لا توجد أخبار متاحة حالياً، حاول لاحقاً.
+          <div class="error-card">
+            😕 لم يتم جلب أي أخبار. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.
           </div>`;
+        status.textContent = "❌ فشل جلب الأخبار";
       } else {
         top5.forEach(news => {
           const card = document.createElement("div");
           card.className = "news-card";
           card.style.borderRightColor = news.color;
           card.innerHTML = `
-            <span class="news-source" style="background-color:${news.color}">${news.source}</span>
+            <span class="news-source" style="background-color:${news.color}">
+              ${news.source}
+            </span>
             <div class="news-title">
               <a href="${news.link}" target="_blank" rel="noopener">${news.title}</a>
             </div>
@@ -206,16 +227,21 @@
           `;
           container.appendChild(card);
         });
+
+        const failMsg = failedSources.length
+          ? ` | ⚠️ فشل: ${failedSources.join(", ")}`
+          : "";
+        status.textContent = `✅ أحدث ${top5.length} أخبار${failMsg}`;
       }
 
-      status.textContent = `✅ يتم عرض أحدث ${top5.length} أخبار متاحة`;
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = "🔄 تحديث الأخبار";
     }
 
     function getTimeAgo(date) {
       const diff = Math.floor((new Date() - date) / 60000);
-      if (diff < 60) return `منذ ${diff} دقيقة`;
+      if (diff < 1)   return "الآن";
+      if (diff < 60)  return `منذ ${diff} دقيقة`;
       const hours = Math.floor(diff / 60);
       if (hours < 24) return `منذ ${hours} ساعة`;
       const days = Math.floor(hours / 24);
