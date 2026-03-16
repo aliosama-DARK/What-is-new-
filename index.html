@@ -63,23 +63,8 @@
       font-size: 0.9rem;
     }
 
-    /* ✅ بنر تنبيه "لا يوجد أخبار جديدة" */
-    #old-news-banner {
-      display: none;
-      margin-top: 20px;
-      background-color: #fef3c7;
-      border: 1px solid #f59e0b;
-      border-radius: 12px;
-      padding: 12px 20px;
-      font-size: 0.95rem;
-      color: #92400e;
-      max-width: 750px;
-      width: 100%;
-      text-align: center;
-    }
-
     #news-container {
-      margin-top: 16px;
+      margin-top: 20px;
       width: 100%;
       max-width: 750px;
       display: flex;
@@ -103,7 +88,6 @@
     .news-source {
       font-size: 0.75rem;
       color: white;
-      background-color: #3b82f6;
       padding: 3px 10px;
       border-radius: 20px;
       display: inline-block;
@@ -137,15 +121,10 @@
 <body>
 
   <h1>📰 What is New?</h1>
-  <p class="subtitle">أحدث الأخبار من BBC • Reuters • Google News — آخر 12 ساعة</p>
+  <p class="subtitle">أحدث الأخبار من BBC • Reuters • Google News</p>
 
   <button id="fetchBtn" onclick="fetchNews()">🔍 What is New?</button>
   <p id="status"></p>
-
-  <!-- ✅ بنر الأخبار القديمة -->
-  <div id="old-news-banner">
-    ⚠️ لا توجد أخبار جديدة خلال آخر 12 ساعة — يتم عرض أحدث الأخبار المتاحة
-  </div>
 
   <div id="news-container"></div>
 
@@ -174,19 +153,13 @@
       const btn = document.getElementById("fetchBtn");
       const status = document.getElementById("status");
       const container = document.getElementById("news-container");
-      const banner = document.getElementById("old-news-banner");
 
       btn.disabled = true;
       btn.textContent = "⏳ جاري التحميل...";
       status.textContent = "";
       container.innerHTML = "";
-      banner.style.display = "none";
-
-      const now = new Date();
-      const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
 
       let allNews = [];
-      let allOldNews = [];
 
       for (const source of SOURCES) {
         try {
@@ -195,20 +168,13 @@
 
           if (data.status === "ok" && data.items) {
             data.items.forEach(item => {
-              const pubDate = new Date(item.pubDate);
-              const newsObj = {
+              allNews.push({
                 title: item.title,
                 link: item.link,
-                pubDate,
+                pubDate: new Date(item.pubDate),
                 source: source.name,
                 color: source.color
-              };
-
-              if (pubDate >= twelveHoursAgo) {
-                allNews.push(newsObj);      // ✅ أخبار جديدة
-              } else {
-                allOldNews.push(newsObj);   // 🗂️ أخبار قديمة
-              }
+              });
             });
           }
         } catch (err) {
@@ -216,32 +182,18 @@
         }
       }
 
-      // ترتيب من الأحدث
+      // ✅ ترتيب من الأحدث بدون أي فلترة
       allNews.sort((a, b) => b.pubDate - a.pubDate);
-      allOldNews.sort((a, b) => b.pubDate - a.pubDate);
 
-      let finalNews = [];
-      let isOld = false;
+      const top5 = allNews.slice(0, 5);
 
-      if (allNews.length > 0) {
-        // ✅ في أخبار جديدة
-        finalNews = allNews.slice(0, 5);
+      if (top5.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center;background:white;border-radius:16px;padding:30px;color:#6b7280;">
+            😕 لا توجد أخبار متاحة حالياً، حاول لاحقاً.
+          </div>`;
       } else {
-        // ⚠️ مافيش أخبار جديدة → اجيب القديمة
-        finalNews = allOldNews.slice(0, 5);
-        isOld = true;
-      }
-
-      if (finalNews.length === 0) {
-        container.innerHTML = `<div style="text-align:center;background:white;border-radius:16px;padding:30px;color:#6b7280;">😕 لا توجد أخبار متاحة حالياً، حاول لاحقاً.</div>`;
-      } else {
-        // ✅ إظهار البنر لو الأخبار قديمة
-        if (isOld) {
-          banner.style.display = "block";
-        }
-
-        finalNews.forEach(news => {
-          const timeAgo = getTimeAgo(news.pubDate);
+        top5.forEach(news => {
           const card = document.createElement("div");
           card.className = "news-card";
           card.style.borderRightColor = news.color;
@@ -250,16 +202,13 @@
             <div class="news-title">
               <a href="${news.link}" target="_blank" rel="noopener">${news.title}</a>
             </div>
-            <div class="news-meta">🕐 ${timeAgo}</div>
+            <div class="news-meta">🕐 ${getTimeAgo(news.pubDate)}</div>
           `;
           container.appendChild(card);
         });
       }
 
-      status.textContent = isOld
-        ? `📂 يتم عرض ${finalNews.length} خبر قديم`
-        : `✅ تم جلب ${finalNews.length} خبر من آخر 12 ساعة`;
-
+      status.textContent = `✅ يتم عرض أحدث ${top5.length} أخبار متاحة`;
       btn.disabled = false;
       btn.textContent = "🔄 تحديث الأخبار";
     }
