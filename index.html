@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>What is New?</title>
   <style>
@@ -46,8 +46,8 @@
 
     #status {
       margin-top: 15px;
-      color: #374151;
       font-size: 0.9rem;
+      color: #374151;
       min-height: 20px;
     }
 
@@ -71,6 +71,14 @@
 
     .news-card:hover { transform: translateY(-3px); }
 
+    .news-image {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
     .news-source {
       font-size: 0.75rem;
       color: white;
@@ -79,13 +87,14 @@
       display: inline-block;
       margin-bottom: 8px;
       font-weight: 600;
+      background-color: #3b82f6;
     }
 
     .news-title {
       font-size: 1rem;
       font-weight: 700;
       color: #1f2937;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       line-height: 1.5;
     }
 
@@ -96,6 +105,13 @@
 
     .news-title a:hover { color: #2563eb; }
 
+    .news-desc {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
     .news-meta { font-size: 0.8rem; color: #9ca3af; }
 
     .error-card {
@@ -105,133 +121,72 @@
       padding: 16px 20px;
       color: #991b1b;
       font-size: 0.9rem;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
   <h1>📰 What is New?</h1>
-  <p class="subtitle">أحدث الأخبار من BBC • Reuters • Google News</p>
+  <p class="subtitle">أحدث الأخبار العالمية — مدعوم بـ GNews API</p>
 
   <button id="fetchBtn" onclick="fetchNews()">🔍 What is New?</button>
   <p id="status"></p>
   <div id="news-container"></div>
 
   <script>
-    // ✅ CORS Proxy بديل موثوق
-    const PROXY = "https://corsproxy.io/?";
-
-    const SOURCES = [
-      {
-        name: "BBC News",
-        url: "https://feeds.bbci.co.uk/news/world/rss.xml",
-        color: "#b91c1c"
-      },
-      {
-        name: "Google News",
-        url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
-        color: "#16a34a"
-      },
-      {
-        name: "Al Jazeera",
-        url: "https://www.aljazeera.com/xml/rss/all.xml",
-        color: "#92400e"
-      }
-    ];
-
-    // ✅ تحليل RSS بدون مكتبة خارجية
-    function parseRSS(xmlText, sourceName, sourceColor) {
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(xmlText, "text/xml");
-      const items = xml.querySelectorAll("item");
-      const result = [];
-
-      items.forEach(item => {
-        const title = item.querySelector("title")?.textContent?.trim();
-        const link  = item.querySelector("link")?.textContent?.trim()
-                   || item.querySelector("link")?.getAttribute("href")?.trim();
-        const pubDate = item.querySelector("pubDate")?.textContent?.trim();
-
-        if (title && link) {
-          result.push({
-            title,
-            link,
-            pubDate: pubDate ? new Date(pubDate) : new Date(0),
-            source: sourceName,
-            color: sourceColor
-          });
-        }
-      });
-
-      return result;
-    }
-
-    async function fetchFromSource(source) {
-      const url = PROXY + encodeURIComponent(source.url);
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
-      return parseRSS(text, source.name, source.color);
-    }
+    // ✅ ضع مفتاح API هنا بعد التسجيل في gnews.io
+    const API_KEY = "ac079b8cbbc61d5541a20a769bcf4651";
 
     async function fetchNews() {
       const btn       = document.getElementById("fetchBtn");
       const status    = document.getElementById("status");
       const container = document.getElementById("news-container");
 
-      btn.disabled    = true;
-      btn.textContent = "⏳ جاري التحميل...";
+      btn.disabled       = true;
+      btn.textContent    = "⏳ جاري التحميل...";
       status.textContent = "";
       container.innerHTML = "";
 
-      // ✅ جلب كل المصادر في نفس الوقت (Promise.allSettled)
-      const results = await Promise.allSettled(
-        SOURCES.map(s => fetchFromSource(s))
-      );
+      try {
+        const url = `https://gnews.io/api/v4/top-headlines?lang=en&max=5&apikey=${API_KEY}`;
+        const res  = await fetch(url);
+        const data = await res.json();
 
-      let allNews = [];
-      let failedSources = [];
-
-      results.forEach((result, i) => {
-        if (result.status === "fulfilled") {
-          allNews = allNews.concat(result.value);
-        } else {
-          failedSources.push(SOURCES[i].name);
-          console.warn(`❌ ${SOURCES[i].name}:`, result.reason);
+        if (!res.ok || !data.articles) {
+          throw new Error(data.errors?.[0] || "فشل جلب الأخبار");
         }
-      });
 
-      // ✅ ترتيب من الأحدث بدون فلترة
-      allNews.sort((a, b) => b.pubDate - a.pubDate);
-      const top5 = allNews.slice(0, 5);
+        if (data.articles.length === 0) {
+          container.innerHTML = `<div class="error-card">😕 لا توجد أخبار متاحة حالياً.</div>`;
+          status.textContent = "⚠️ لا يوجد نتائج";
+        } else {
+          data.articles.forEach(article => {
+            const card = document.createElement("div");
+            card.className = "news-card";
+            card.innerHTML = `
+              ${article.image ? `<img class="news-image" src="${article.image}" alt="news" onerror="this.style.display='none'"/>` : ""}
+              <span class="news-source">🌐 ${article.source?.name || "مجهول"}</span>
+              <div class="news-title">
+                <a href="${article.url}" target="_blank" rel="noopener">${article.title}</a>
+              </div>
+              ${article.description ? `<div class="news-desc">${article.description}</div>` : ""}
+              <div class="news-meta">🕐 ${getTimeAgo(new Date(article.publishedAt))}</div>
+            `;
+            container.appendChild(card);
+          });
 
-      if (top5.length === 0) {
+          status.textContent = `✅ تم جلب ${data.articles.length} أخبار`;
+        }
+
+      } catch (err) {
         container.innerHTML = `
           <div class="error-card">
-            😕 لم يتم جلب أي أخبار. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.
+            ❌ ${err.message}<br><br>
+            تأكد إن الـ API Key صحيح وإن الاتصال شغال.
           </div>`;
-        status.textContent = "❌ فشل جلب الأخبار";
-      } else {
-        top5.forEach(news => {
-          const card = document.createElement("div");
-          card.className = "news-card";
-          card.style.borderRightColor = news.color;
-          card.innerHTML = `
-            <span class="news-source" style="background-color:${news.color}">
-              ${news.source}
-            </span>
-            <div class="news-title">
-              <a href="${news.link}" target="_blank" rel="noopener">${news.title}</a>
-            </div>
-            <div class="news-meta">🕐 ${getTimeAgo(news.pubDate)}</div>
-          `;
-          container.appendChild(card);
-        });
-
-        const failMsg = failedSources.length
-          ? ` | ⚠️ فشل: ${failedSources.join(", ")}`
-          : "";
-        status.textContent = `✅ أحدث ${top5.length} أخبار${failMsg}`;
+        status.textContent = "❌ حدث خطأ";
+        console.error(err);
       }
 
       btn.disabled    = false;
@@ -244,8 +199,7 @@
       if (diff < 60)  return `منذ ${diff} دقيقة`;
       const hours = Math.floor(diff / 60);
       if (hours < 24) return `منذ ${hours} ساعة`;
-      const days = Math.floor(hours / 24);
-      return `منذ ${days} يوم`;
+      return `منذ ${Math.floor(hours / 24)} يوم`;
     }
   </script>
 
