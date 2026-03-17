@@ -3,74 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What is New? | النسخة الذكية</title>
+    <title>What is New? | النسخة المطورة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* 🎨 التصميم الرمادي الداكن الفخم */
         :root {
-            --bg: #121212; --card: #1e1e1e; --accent: #3b82f6;
-            --text-main: #ffffff; --text-dim: #9ca3af; --border: #2e2e2e;
-            --vip-bg: #1a1c2e; /* لون مائل للأزرق العميق للأخبار الهامة */
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --accent: #60a5fa;
+            --text-main: #e5e7eb;
+            --text-dim: #9ca3af;
+            --border: #2e2e2e;
+            --gold: #fbbf24; /* للأخبار الاقتصادية والسياسية */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg); color: var(--text-main); padding: 20px; }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 40px 20px; }
 
-        header { text-align: center; padding: 40px 0; }
-        h1 { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; }
-        
-        .nav-controls { text-align: center; margin-bottom: 40px; }
+        .container { max-width: 1200px; margin: 0 auto; text-align: center; }
+
+        header h1 { font-size: 3rem; font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
+        header p { color: var(--text-dim); margin-bottom: 40px; }
+
         #fetchBtn {
-            background-color: var(--text-main); color: #000; border: none;
-            padding: 12px 35px; font-size: 1rem; font-weight: 800;
-            border-radius: 50px; cursor: pointer; transition: 0.3s;
+            background-color: var(--text-main); color: #000;
+            border: none; padding: 15px 45px; font-size: 1.1rem;
+            font-weight: 800; border-radius: 6px; cursor: pointer;
+            transition: 0.3s; margin-bottom: 50px;
         }
-        #fetchBtn:hover { transform: scale(1.05); background-color: var(--accent); color: #fff; }
+        #fetchBtn:hover { background-color: var(--accent); color: #fff; transform: scale(1.05); }
 
         /* شبكة الأخبار الذكية */
         #news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            grid-auto-flow: dense;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            grid-auto-flow: dense; /* يجعل الكروت الكبيرة تملأ الفراغات */
         }
 
         .card {
-            background: var(--card); border: 1px solid var(--border);
-            display: flex; flex-direction: column; transition: 0.3s;
-            overflow: hidden; text-align: right; position: relative;
+            background: var(--card-bg); border-radius: 12px;
+            overflow: hidden; border: 1px solid var(--border);
+            transition: 0.3s; text-align: right; display: flex; flex-direction: column;
         }
 
-        /* تنسيق الخبر المهم (سياسة واقتصاد) */
+        /* تمييز الأخبار المهمة */
         .card.featured {
-            grid-column: span 2;
-            background: var(--vip-bg);
-            border-color: var(--accent);
+            grid-column: span 2; /* تأخذ عرض عمودين */
+            border-color: var(--gold);
         }
 
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+        /* تعديل الصور */
         .card-img {
-            width: 100%; height: 200px; object-fit: cover;
-            background: #252525; transition: 0.5s;
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+            background: #252525;
         }
-        .card.featured .card-img { height: 350px; }
+        .card.featured .card-img {
+            height: 350px; /* صورة أكبر للأخبار الهامة */
+        }
 
-        .card-body { padding: 20px; flex-grow: 1; }
-        .tag { font-size: 0.7rem; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .card-body { padding: 25px; flex-grow: 1; }
         
-        .card-title { font-size: 1.1rem; font-weight: 700; line-height: 1.5; }
-        .card.featured .card-title { font-size: 1.6rem; }
-        
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: var(--border);
+            color: var(--text-dim);
+        }
+        .featured .tag { background: var(--gold); color: #000; }
+
+        .card-title { font-size: 1.2rem; line-height: 1.6; font-weight: 700; margin-bottom: 10px; }
+        .featured .card-title { font-size: 1.6rem; }
         .card-title a { text-decoration: none; color: inherit; }
-        .card-desc { color: var(--text-dim); font-size: 0.9rem; margin-top: 10px; display: none; }
-        .card.featured .card-desc { display: block; }
+        
+        .card-desc { color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; }
 
-        .card-footer { padding: 15px 20px; font-size: 0.75rem; color: var(--text-dim); border-top: 1px solid var(--border); }
+        .card-footer { padding: 15px 25px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--accent); }
 
         @media (max-width: 768px) {
             .card.featured { grid-column: span 1; }
-            .card.featured .card-img { height: 200px; }
-            h1 { font-size: 2.5rem; }
+            .card.featured .card-img { height: 220px; }
         }
     </style>
 </head>
@@ -79,76 +101,79 @@
 <div class="container">
     <header>
         <h1>What is New?</h1>
+        <p>نسخة المجلة | أخبار سياسية واقتصادية بالصور</p>
     </header>
 
-    <div class="nav-controls">
-        <button id="fetchBtn" onclick="loadRSS()">🔄 تحديث النشرة</button>
-    </div>
+    <button id="fetchBtn" onclick="getFreeNews()">🔄 تحديث الأخبار الآن</button>
 
-    <div id="news-grid">
-        </div>
+    <div id="news-grid"></div>
 </div>
 
 <script>
-    async function loadRSS() {
+    async function getFreeNews() {
         const grid = document.getElementById("news-grid");
         const btn = document.getElementById("fetchBtn");
 
-        btn.innerText = "رجاء الانتظار...";
         btn.disabled = true;
+        btn.innerText = "رجاء الانتظار...";
         grid.innerHTML = "";
 
-        // استخدام RSS الجزيرة للأخبار العاجلة والسياسية
-        const rss = "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a23915434110/281631e3-9974-4723-8874-8adca3ef6948";
-        const proxy = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}&api_key=oydfv09z85v6fymq0v6f6f9z0v6f6f9z0v6f6f9z`; // مفتاح وسيط مجاني عام
+        const rssUrl = "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a23915434110/281631e3-9974-4723-8874-8adca3ef6948";
+        const finalUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&t=${Date.now()}`;
 
         try {
-            const res = await fetch(proxy);
-            const data = await res.json();
+            const response = await fetch(finalUrl);
+            const data = await response.json();
 
-            data.items.forEach(item => {
-                // تحديد ما إذا كان الخبر سياسي أو اقتصادي
-                const isFeatured = /سياسة|اقتصاد|حرب|دولار|قمة|اتفاق|نفط|غزة|لبنان|ميزانية/.test(item.title + item.description);
-                
-                // محاولة استخراج الصورة
-                let imageUrl = "";
-                if (item.enclosure && item.enclosure.link) imageUrl = item.enclosure.link;
-                else if (item.thumbnail) imageUrl = item.thumbnail;
-                else {
-                    // إذا لم توجد صورة نستخدم صورة عشوائية مرتبطة بالموضوع
-                    imageUrl = isFeatured ? 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=800&q=80' 
-                                          : 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=400&q=80';
-                }
+            if (data.status === "ok") {
+                data.items.forEach(item => {
+                    // 1. تحديد أهمية الخبر (سياسة واقتصاد)
+                    const isImportant = /سياسة|اقتصاد|حرب|ميزانية|دولار|اتفاق|نفط|غزة|قمة/.test(item.title + item.description);
+                    
+                    // 2. محاولة جلب الصورة الحقيقية
+                    let imgUrl = "";
+                    if (item.enclosure && item.enclosure.link) {
+                        imgUrl = item.enclosure.link;
+                    } else if (item.thumbnail) {
+                        imgUrl = item.thumbnail;
+                    } else {
+                        // صورة احتياطية فخمة إذا لم تتوفر صورة للخبر
+                        imgUrl = "https://images.unsplash.com/photo-1585829365234-78d2b50294a6?w=800&q=80";
+                    }
 
-                const card = `
-                    <div class="card ${isFeatured ? 'featured' : ''}">
-                        <img class="card-img" src="${imageUrl}" alt="img">
-                        <div class="card-body">
-                            <span class="tag">${isFeatured ? 'خبر هام (سياسة/اقتصاد)' : 'عام'}</span>
-                            <h3 class="card-title"><a href="${item.link}" target="_blank">${item.title}</a></h3>
-                            <p class="card-desc">${clean(item.description)}</p>
-                        </div>
-                        <div class="card-footer">
-                            📅 ${new Date(item.pubDate).toLocaleTimeString('ar-EG')}
-                        </div>
-                    </div>`;
-                grid.innerHTML += card;
-            });
-        } catch (e) {
-            grid.innerHTML = "<p>تعذر جلب الأخبار، حاول لاحقاً.</p>";
+                    const card = `
+                        <div class="card ${isImportant ? 'featured' : ''}">
+                            <img src="${imgUrl}" class="card-img" alt="news image" onerror="this.src='https://via.placeholder.com/800x400?text=News'">
+                            <div class="card-body">
+                                <span class="tag">${isImportant ? 'تحليل سياسي/اقتصادي' : 'أخبار عامة'}</span>
+                                <h3 class="card-title"><a href="${item.link}" target="_blank">${item.title}</a></h3>
+                                <p class="card-desc">${cleanDescription(item.description)}</p>
+                            </div>
+                            <div class="card-footer">
+                                ⏱️ ${new Date(item.pubDate).toLocaleTimeString('ar-EG')} | الجزيرة نت
+                            </div>
+                        </div>`;
+                    grid.innerHTML += card;
+                });
+            } else {
+                throw new Error();
+            }
+        } catch (error) {
+            grid.innerHTML = `<div class="error-area">عذراً، حدث خطأ في جلب الأخبار. حاول مرة أخرى.</div>`;
         } finally {
-            btn.innerText = "🔄 تحديث النشرة";
             btn.disabled = false;
+            btn.innerText = "🔄 تحديث الأخبار الآن";
         }
     }
 
-    function clean(str) {
-        let span = document.createElement('span');
-        span.innerHTML = str;
-        return span.textContent || span.innerText || "";
+    function cleanDescription(text) {
+        let div = document.createElement("div");
+        div.innerHTML = text;
+        let plainText = div.textContent || div.innerText || "";
+        return plainText.length > 150 ? plainText.substring(0, 150) + "..." : plainText;
     }
 
-    window.onload = loadRSS;
+    window.onload = getFreeNews;
 </script>
 
 </body>
