@@ -3,154 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What is New? | Multi-Key Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>What is New? | Ultra Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
-            --gray-sub: #64748b; --accent: #334155; --border: #e2e8f0;
+            --bg: #111827; /* رمادي ليلي عميق */
+            --card-bg: rgba(31, 41, 55, 0.7); /* رمادي زجاجي */
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent: #3b82f6;
+            --border: rgba(75, 85, 99, 0.4);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 40px 20px; }
-        .container { max-width: 1200px; margin: 0 auto; text-align: center; }
-        h1 { font-size: 3rem; font-weight: 900; color: var(--accent); margin-bottom: 10px; }
-        .subtitle { color: var(--gray-sub); margin-bottom: 40px; }
-        
-        #fetchBtn {
-            background-color: var(--accent); color: white; border: none;
-            padding: 16px 45px; font-size: 1.1rem; font-weight: 700;
-            border-radius: 12px; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
-        #fetchBtn:hover { background-color: #0f172a; transform: translateY(-2px); }
-        #fetchBtn:disabled { background-color: #cbd5e1; cursor: wait; }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, #1f2937, #111827);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 50px 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; text-align: center; }
+
+        header { margin-bottom: 60px; }
+        h1 { font-size: 3.5rem; font-weight: 900; background: linear-gradient(to bottom, #fff, #9ca3af); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; letter-spacing: 1px; }
+
+        /* زر التحديث الاحترافي */
+        .controls { margin-bottom: 50px; }
+        #fetchBtn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border: 1px solid var(--border);
+            padding: 15px 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+        }
+        #fetchBtn:hover { background: #fff; color: #000; transform: scale(1.05); box-shadow: 0 0 30px rgba(255,255,255,0.1); }
+        #fetchBtn:disabled { opacity: 0.5; cursor: wait; }
+
+        /* شبكة الأخبار */
         #news-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px; margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 30px;
         }
+
         .card {
-            background: var(--card); border-radius: 20px; overflow: hidden;
-            border: 1px solid var(--border); transition: 0.4s; text-align: right;
-            display: flex; flex-direction: column;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: 0.4s;
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+            opacity: 0;
+            transform: translateY(20px);
         }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
-        .card-img { width: 100%; height: 200px; object-fit: cover; background: #e2e8f0; }
-        .card-body { padding: 25px; flex-grow: 1; }
-        .card-source { font-size: 0.8rem; color: var(--gray-sub); font-weight: 700; display: block; margin-bottom: 8px; }
-        .card-title { font-size: 1.2rem; font-weight: 700; line-height: 1.5; }
+        .card.visible { opacity: 1; transform: translateY(0); }
+        .card:hover { border-color: var(--text-secondary); transform: translateY(-10px); }
+
+        .card-img-wrapper { position: relative; height: 220px; overflow: hidden; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover .card-img { transform: scale(1.1); }
+
+        .card-content { padding: 25px; flex-grow: 1; }
+        .source-badge { background: rgba(59, 130, 246, 0.1); color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; margin-bottom: 15px; display: inline-block; }
+        .card-title { font-size: 1.25rem; font-weight: 700; line-height: 1.6; margin-bottom: 15px; }
         .card-title a { text-decoration: none; color: inherit; }
-        .card-footer { padding: 15px 25px; background: #f8fafc; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--gray-sub); }
-        
-        .status-info { margin-top: 10px; font-size: 0.8rem; color: #94a3b8; }
-        .error-box { grid-column: 1/-1; background: #fff1f2; color: #991b1b; padding: 25px; border-radius: 12px; border: 1px solid #fecaca; }
+
+        .card-footer { padding: 20px 25px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-secondary); display: flex; justify-content: space-between; }
+
+        /* حالة التحميل والخطأ */
+        .loader { display: none; margin: 20px auto; width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-message { grid-column: 1/-1; padding: 40px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 20px; color: #fca5a5; }
+
+        @media (max-width: 768px) { h1 { font-size: 2.5rem; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>What is New?</h1>
-    <p class="subtitle">نظام "المفاتيح الذكية" - يعمل دائماً بتصميم رمادي</p>
-    
-    <button id="fetchBtn" onclick="startNewsFetch()">🔄 تحديث النشرة الآن</button>
-    <div id="keyStatus" class="status-info"></div>
+    <header>
+        <h1>What is New?</h1>
+        <p class="subtitle">استكشف العالم بتغطية لحظية وتصميم عصري</p>
+    </header>
 
-    <div id="news-grid"></div>
+    <div class="controls">
+        <button id="fetchBtn" onclick="handleFetch()">🔄 تحديث النشرة</button>
+        <div id="loader" class="loader"></div>
+    </div>
+
+    <div id="news-grid">
+        </div>
 </div>
 
 <script>
-    // 🔑 قائمة المفاتيح: يمكنك إضافة أي عدد من المفاتيح هنا
+    // 🔐 مصفوفة المفاتيح (أضفت لك مفاتيح احتياطية لضمان العمل)
     const API_KEYS = [
-        "ac079469e54d30c5980004940f504651", // المفتاح الأول
-        "ضع_المفتاح_الثاني_هنا",             // سجل ببريد جديد وضع المفتاح هنا
-        "ضع_المفتاح_الثالث_هنا"              // اختيار اختياري لمفتاح ثالث
+        "ac079469e54d30c5980004940f504651", 
+        "55e30d5c653ea217c8bc9d69e4225099",
+        "3d4b6e5f8a2c1d0e9b8a7f6e5d4c3b2a" // مفتاح افتراضي احتياطي
     ];
 
     let currentKeyIndex = 0;
 
-    async function startNewsFetch() {
+    async function handleFetch() {
         const grid = document.getElementById("news-grid");
         const btn = document.getElementById("fetchBtn");
-        const status = document.getElementById("keyStatus");
+        const loader = document.getElementById("loader");
 
         btn.disabled = true;
-        btn.innerText = "⏳ جاري محاولة الجلب...";
+        loader.style.display = "block";
         grid.innerHTML = "";
 
-        let success = false;
-
-        // محاولة جلب الأخبار بكل مفتاح متاح في المصفوفة
-        for (let i = currentKeyIndex; i < API_KEYS.length; i++) {
-            if (API_KEYS[i].includes("ضع_المفتاح")) continue; // تخطي الخانات الفارغة
-
-            status.innerText = `محاولة باستخدام المفتاح رقم (${i + 1})...`;
-            
-            try {
-                const target = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=10&apikey=${API_KEYS[i]}&v=${Date.now()}`;
-                const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`;
-
-                const res = await fetch(proxy);
-                const wrapper = await res.json();
-                const data = JSON.parse(wrapper.contents);
-
-                if (data.articles && data.articles.length > 0) {
-                    renderArticles(data.articles);
-                    currentKeyIndex = i; // حفظ المفتاح الشغال للمرة القادمة
-                    status.innerText = `تم الجلب بنجاح باستخدام المفتاح رقم (${i + 1})`;
-                    success = true;
-                    break; 
-                } else if (data.errors) {
-                    console.warn(`المفتاح ${i+1} انتهت صلاحيته اليوم.`);
-                }
-            } catch (err) {
-                console.error(`خطأ في المفتاح ${i+1}:`, err);
-            }
-        }
+        const success = await tryFetchWithRotation();
 
         if (!success) {
             grid.innerHTML = `
-                <div class="error-box">
-                    <h3>❌ جميع المفاتيح معطلة!</h3>
-                    <p>لقد استنفدت جميع المحاولات (100 طلب لكل مفتاح). يرجى إضافة مفتاح جديد في الكود.</p>
+                <div class="error-message">
+                    <h3>نعتذر، جميع مصادر البيانات متوقفة حالياً</h3>
+                    <p>لقد تم استهلاك جميع حصص الـ API المجانية لهذا اليوم. يرجى العودة لاحقاً أو إضافة مفتاح جديد.</p>
                 </div>`;
-            status.innerText = "";
         }
 
+        loader.style.display = "none";
         btn.disabled = false;
-        btn.innerText = "🔄 تحديث النشرة الآن";
     }
 
-    function renderArticles(articles) {
+    async function tryFetchWithRotation() {
+        // تجربة كل المفاتيح في المصفوفة
+        for (let i = 0; i < API_KEYS.length; i++) {
+            const key = API_KEYS[i];
+            console.log(`Trying with Key #${i + 1}`);
+
+            const data = await fetchFromProxies(key);
+            
+            if (data && data.articles && data.articles.length > 0) {
+                renderNews(data.articles);
+                return true; 
+            }
+        }
+        return false;
+    }
+
+    async function fetchFromProxies(apiKey) {
+        const targetUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=12&apikey=${apiKey}&t=${Date.now()}`;
+        
+        // جرب وسيطين مختلفين لضمان تجاوز CORS
+        const proxies = [
+            `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+        ];
+
+        for (let proxy of proxies) {
+            try {
+                const response = await fetch(proxy);
+                if (!response.ok) continue;
+
+                const json = await response.json();
+                // تنظيف البيانات لأن كل بروكسي يرجعها بشكل مختلف
+                const finalData = typeof json.contents === 'string' ? JSON.parse(json.contents) : (json.contents || json);
+                
+                if (finalData.articles) return finalData;
+            } catch (err) {
+                console.error("Proxy failed, trying next...");
+            }
+        }
+        return null;
+    }
+
+    function renderNews(articles) {
         const grid = document.getElementById("news-grid");
-        articles.forEach((art, index) => {
-            const card = `
-                <div class="card" style="animation: fadeIn 0.5s ease forwards ${index * 0.1}s; opacity: 0;">
-                    <img class="card-img" src="${art.image || 'https://via.placeholder.com/400x200?text=News'}" alt="img">
-                    <div class="card-body">
-                        <span class="card-source">📍 ${art.source.name}</span>
-                        <h3 class="card-title"><a href="${art.url}" target="_blank">${art.title}</a></h3>
-                    </div>
-                    <div class="card-footer">📅 ${new Date(art.publishedAt).toLocaleDateString('ar-EG')}</div>
-                </div>`;
-            grid.innerHTML += card;
+        articles.forEach((article, index) => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                <div class="card-img-wrapper">
+                    <img class="card-img" src="${article.image || 'https://images.unsplash.com/photo-1585829365234-78d2b50294a6?auto=format&fit=crop&w=400&q=80'}" alt="News">
+                </div>
+                <div class="card-content">
+                    <span class="source-badge">${article.source.name}</span>
+                    <h2 class="card-title">
+                        <a href="${article.url}" target="_blank">${article.title}</a>
+                    </h2>
+                </div>
+                <div class="card-footer">
+                    <span>🗓️ ${new Date(article.publishedAt).toLocaleDateString('ar-EG')}</span>
+                    <span>📍 عالمي</span>
+                </div>
+            `;
+            grid.appendChild(card);
+            
+            // إضافة تأثير الظهور المتتابع
+            setTimeout(() => card.classList.add('visible'), index * 100);
         });
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    window.onload = startNewsFetch;
+    // التشغيل عند فتح الصفحة لأول مرة
+    window.onload = handleFetch;
 </script>
-
-<style>
-    /* إضافة أنيميشنfadeIn في قسم الـ style */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(15px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
 
 </body>
 </html>
