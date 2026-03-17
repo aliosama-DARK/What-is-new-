@@ -138,20 +138,7 @@
 
   <script>
     // ✅ تأكد أن هذا المفتاح صالح وفعال من موقع gnews.io
-    try {
-        const url = `https://gnews.io/api/v4/top-headlines?lang=en&max=5&apikey=${API_KEY}`;
-        
-        // أضفنا timeout بسيط للتأكد من عدم تعليق الطلب
-        const res = await fetch(url, { mode: 'cors' }); 
-        
-        if (!res.ok) {
-           const errorData = await res.json();
-           throw new Error(errorData.errors ? errorData.errors[0] : `HTTP error! status: ${res.status}`);
-        }
-
-        const data = await res.json();
-        // ... باقي الكود كما هو
-    const API_KEY = "ac079b8cbbc61d5541a20a769bcf4651";
+      const API_KEY = "ac079b8cbbc61d5541a20a769bcf4651";
 
     async function fetchNews() {
       const btn       = document.getElementById("fetchBtn");
