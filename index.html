@@ -1,15 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>What is New?</title>
+  <title>What is New? | النسخة المستقرة</title>
   <style>
+    /* التنسيقات (بقيت كما هي مع تحسين طفيف للجمالية) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      background-color: #d1d5db;
+      background-color: #f3f4f6;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
       display: flex;
@@ -17,198 +16,102 @@
       align-items: center;
       padding: 40px 20px;
     }
-
-    h1 {
-      font-size: 2.5rem;
-      color: #1f2937;
-      margin-bottom: 10px;
-    }
-
-    p.subtitle {
-      color: #6b7280;
-      margin-bottom: 30px;
-      font-size: 0.95rem;
-    }
-
+    h1 { font-size: 2.5rem; color: #1f2937; margin-bottom: 10px; }
+    p.subtitle { color: #6b7280; margin-bottom: 30px; font-size: 0.95rem; }
     #fetchBtn {
-      background-color: #3b82f6;
-      color: white;
-      border: none;
-      padding: 14px 36px;
-      font-size: 1.1rem;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+      background-color: #3b82f6; color: white; border: none;
+      padding: 14px 36px; font-size: 1.1rem; border-radius: 50px;
+      cursor: pointer; transition: all 0.3s;
       box-shadow: 0 4px 15px rgba(59,130,246,0.4);
     }
-
-    #fetchBtn:hover { background-color: #2563eb; transform: scale(1.05); }
-    #fetchBtn:disabled { background-color: #93c5fd; cursor: not-allowed; transform: none; }
-
-    #status {
-      margin-top: 15px;
-      font-size: 0.9rem;
-      color: #374151;
-      min-height: 20px;
-    }
-
+    #fetchBtn:hover { background-color: #2563eb; transform: translateY(-2px); }
+    #fetchBtn:disabled { background-color: #93c5fd; cursor: not-allowed; }
     #news-container {
-      margin-top: 20px;
-      width: 100%;
-      max-width: 750px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+      margin-top: 20px; width: 100%; max-width: 750px;
+      display: flex; flex-direction: column; gap: 16px;
     }
-
     .news-card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px 24px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-      border-right: 5px solid #3b82f6;
+      background: white; border-radius: 16px; padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-right: 5px solid #3b82f6;
     }
-
-    .news-card:hover { transform: translateY(-3px); }
-
-    .news-image {
-      width: 100%;
-      max-height: 180px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 12px;
-    }
-
-    .news-source {
-      font-size: 0.75rem;
-      color: white;
-      padding: 3px 10px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      background-color: #3b82f6;
-    }
-
-    .news-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 6px;
-      line-height: 1.5;
-    }
-
-    .news-title a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .news-title a:hover { color: #2563eb; }
-
-    .news-desc {
-      font-size: 0.85rem;
-      color: #6b7280;
-      margin-bottom: 8px;
-      line-height: 1.5;
-    }
-
-    .news-meta { font-size: 0.8rem; color: #9ca3af; }
-
-    .error-card {
-      background: #fef2f2;
-      border: 1px solid #fca5a5;
-      border-radius: 12px;
-      padding: 16px 20px;
-      color: #991b1b;
-      font-size: 0.9rem;
-      text-align: center;
-      line-height: 1.6;
-    }
+    .news-image { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 12px; }
+    .news-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .news-title a { text-decoration: none; color: #1f2937; }
+    .news-meta { font-size: 0.8rem; color: #9ca3af; margin-top: 10px; }
+    .error-card { background: #fef2f2; padding: 20px; border-radius: 12px; color: #991b1b; text-align: center; }
   </style>
 </head>
 <body>
 
   <h1>📰 What is New?</h1>
-  <p class="subtitle">أحدث الأخبار العالمية — مدعوم بـ GNews API</p>
+  <p class="subtitle">أحدث الأخبار بنظام الربط المستقر الأبدي</p>
 
-  <button id="fetchBtn" onclick="fetchNews()">🔍 What is New?</button>
-  <p id="status"></p>
+  <button id="fetchBtn" onclick="fetchNews()">🔍 جلب الأخبار الآن</button>
+  <p id="status" style="margin-top:10px; color:#374151;"></p>
   <div id="news-container"></div>
 
   <script>
-    // ✅ مفتاح GNews الخاص بك (تأكد أنه من gnews.io)
-const API_KEY = "55e30d5c653ea217c8bc9d69e4225099";
+    // استخدم مفتاحك الخاص هنا
+    const API_KEY = "55e30d5c653ea217c8bc9d69e4225099";
 
-async function fetchNews() {
-  const btn       = document.getElementById("fetchBtn");
-  const status    = document.getElementById("status");
-  const container = document.getElementById("news-container");
+    async function fetchNews() {
+      const btn = document.getElementById("fetchBtn");
+      const status = document.getElementById("status");
+      const container = document.getElementById("news-container");
 
-  btn.disabled       = true;
-  btn.textContent    = "⏳ جاري التحميل...";
-  status.textContent = "";
-  container.innerHTML = "";
+      btn.disabled = true;
+      btn.textContent = "⏳ جاري الاتصال بالسيرفر...";
+      container.innerHTML = "";
 
-  try {
-    // 1. تعريف البروكسي والرابط الأصلي
-    const proxy = "https://cors-anywhere.herokuapp.com/"; 
-    const targetUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&country=eg&max=10&token=${API_KEY}`;
+      try {
+        // الرابط الأصلي للأخبار
+        const targetUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&country=eg&max=10&apikey=${API_KEY}`;
+        
+        // استخدام بروكسي AllOrigins (هذا هو السر في الاستقرار والأبدية)
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
 
-    // 2. دمج البروكسي مع الرابط لكسر حماية CORS
-    const res = await fetch(proxy + targetUrl);
-    
-    const data = await res.json();
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error("فشل الاتصال بالوسيط");
 
-    if (!res.ok) {
-       const errorMsg = data.errors ? Object.values(data.errors).join(", ") : (data.message || "خطأ في السيرفر");
-       throw new Error(errorMsg);
+        const wrapper = await res.json();
+        // البروكسي يعيد البيانات داخل نص (String) لذا نحتاج لتحويلها لـ JSON
+        const data = JSON.parse(wrapper.contents);
+
+        if (data.errors) throw new Error(data.errors[0]);
+
+        if (!data.articles || data.articles.length === 0) {
+          container.innerHTML = `<div class="error-card">😕 لا توجد أخبار حالياً.</div>`;
+        } else {
+          data.articles.forEach(article => {
+            const card = document.createElement("div");
+            card.className = "news-card";
+            card.innerHTML = `
+              ${article.image ? `<img class="news-image" src="${article.image}" onerror="this.style.display='none'"/>` : ""}
+              <h3 class="news-title"><a href="${article.url}" target="_blank">${article.title}</a></h3>
+              <p style="font-size:0.9rem; color:#4b5563;">${article.description || ""}</p>
+              <div class="news-meta">🌐 المصدر: ${article.source.name} | 🕐 ${getTimeAgo(new Date(article.publishedAt))}</div>
+            `;
+            container.appendChild(card);
+          });
+          status.textContent = `✅ تم تحديث ${data.articles.length} أخبار`;
+        }
+      } catch (err) {
+        container.innerHTML = `<div class="error-card">❌ عذراً، حدث خطأ: ${err.message}</div>`;
+        status.textContent = "";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🔄 تحديث الأخبار";
+      }
     }
 
-    if (!data.articles || data.articles.length === 0) {
-      container.innerHTML = `<div class="error-card">😕 لا توجد أخبار متاحة حالياً.</div>`;
-    } else {
-      data.articles.forEach(article => {
-        const card = document.createElement("div");
-        card.className = "news-card";
-        card.innerHTML = `
-          ${article.image ? `<img class="news-image" src="${article.image}" alt="news" onerror="this.style.display='none'"/>` : ""}
-          <span class="news-source">🌐 ${article.source?.name || "مجهول"}</span>
-          <div class="news-title">
-            <a href="${article.url}" target="_blank" rel="noopener">${article.title}</a>
-          </div>
-          ${article.description ? `<div class="news-desc">${article.description}</div>` : ""}
-          <div class="news-meta">🕐 ${getTimeAgo(new Date(article.publishedAt))}</div>
-        `;
-        container.appendChild(card);
-      });
-      status.textContent = `✅ تم جلب ${data.articles.length} أخبار`;
+    function getTimeAgo(date) {
+      const diff = Math.floor((new Date() - date) / 60000);
+      if (diff < 1) return "الآن";
+      if (diff < 60) return `منذ ${diff} دقيقة`;
+      const hours = Math.floor(diff / 60);
+      if (hours < 24) return `منذ ${hours} ساعة`;
+      return `منذ ${Math.floor(hours / 24)} يوم`;
     }
-
-  } catch (err) {
-    container.innerHTML = `
-      <div class="error-card">
-        ❌ <strong>خطأ:</strong> ${err.message}<br><br>
-        <strong>مهم جداً:</strong> إذا كان الخطأ هو 403 Forbidden، يرجى زيارة 
-        <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank">هذا الرابط</a> 
-        والضغط على زر التفعيل (Request Access) ثم جرب مرة أخرى.
-      </div>`;
-    status.textContent = "❌ حدث خطأ";
-  }
-
-  btn.disabled    = false;
-  btn.textContent = "🔄 تحديث الأخبار";
-}
-function getTimeAgo(date) {
-  if (isNaN(date)) return "غير معروف";
-  const diff = Math.floor((new Date() - date) / 60000);
-  if (diff < 1)    return "الآن";
-  if (diff < 60)   return `منذ ${diff} دقيقة`;
-  const hours = Math.floor(diff / 60);
-  if (hours < 24) return `منذ ${hours} ساعة`;
-  return `منذ ${Math.floor(hours / 24)} يوم`;
-}
   </script>
-
 </body>
 </html>
