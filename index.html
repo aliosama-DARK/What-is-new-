@@ -3,233 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What is New? | النسخة الاحترافية الرمادية</title>
+    <title>What is New? | النسخة الاحترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* 🎨 التنسيق الرمادي العصري */
+        /* 🎨 ستايل رمادي فخم (Slate Gray Style) */
         :root {
-            --bg-body: #f1f5f9; /* رمادي فاتح جداً للخلفية */
-            --bg-card: #ffffff;
-            --gray-dark: #334155; /* رمادي غامق للنصوص */
-            --gray-medium: #64748b;
-            --accent: #475569; /* رمادي صخري للأزرار */
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #475569; /* رمادي غامق احترافي */
             --border: #e2e8f0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
 
-        body { 
-            background-color: var(--bg-body); 
-            color: var(--gray-dark);
-            padding: 40px 20px;
-        }
+        body { background-color: var(--bg); color: var(--text-main); padding: 40px 20px; }
 
-        .header { text-align: center; margin-bottom: 50px; }
-        
-        h1 { 
-            font-size: 3rem; 
-            font-weight: 900; 
-            color: var(--gray-dark);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
+        .container { max-width: 1200px; margin: 0 auto; text-align: center; }
 
-        .subtitle { color: var(--gray-medium); font-size: 1.1rem; }
+        .header { margin-bottom: 50px; }
+        h1 { font-size: 3.2rem; font-weight: 900; color: var(--text-main); margin-bottom: 10px; }
+        .subtitle { color: var(--text-muted); font-size: 1.1rem; }
 
-        /* زر التحديث - رمادي فخم */
-        .btn-wrapper { text-align: center; margin-bottom: 60px; }
-
+        /* زر التحديث */
         #fetchBtn {
             background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 18px 50px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(71, 85, 105, 0.2);
+            color: white; border: none; padding: 18px 50px;
+            font-size: 1.2rem; font-weight: 700; border-radius: 12px;
+            cursor: pointer; transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
         }
+        #fetchBtn:hover { background-color: #334155; transform: translateY(-3px); }
+        #fetchBtn:disabled { background-color: #cbd5e1; cursor: wait; }
 
-        #fetchBtn:hover {
-            background-color: #1e293b;
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        #fetchBtn:disabled { background-color: #cbd5e1; cursor: not-allowed; transform: none; }
-
-        /* 📱 توزيع الأخبار في شبكة احترافية */
+        /* 📱 توزيع الشبكة (Grid) - 3 أعمدة */
         #news-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
+            gap: 25px;
         }
 
         .news-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border);
-            transition: 0.3s;
-            animation: slideUp 0.6s ease forwards;
+            background: var(--card); border-radius: 16px; overflow: hidden;
+            border: 1px solid var(--border); transition: 0.4s;
+            display: flex; flex-direction: column; text-align: right;
+            animation: fadeIn 0.5s ease forwards;
         }
+        .news-card:hover { transform: translateY(-10px); box-shadow: 0 20px 30px rgba(0,0,0,0.05); }
 
-        .news-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-        }
+        .news-img { width: 100%; height: 200px; object-fit: cover; background: #cbd5e1; }
 
-        .news-image {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            background: #cbd5e1;
-        }
-
-        .news-content { padding: 25px; flex-grow: 1; }
-
-        .source-label {
-            font-size: 0.75rem;
-            background: #f8fafc;
-            color: var(--gray-medium);
-            padding: 4px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            margin-bottom: 12px;
-            display: inline-block;
-        }
-
-        .news-title {
-            font-size: 1.2rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
-            color: var(--gray-dark);
-        }
-
+        .news-body { padding: 20px; flex-grow: 1; }
+        .source-tag { font-size: 0.75rem; color: var(--accent); font-weight: 900; margin-bottom: 10px; display: block; }
+        .news-title { font-size: 1.15rem; font-weight: 700; line-height: 1.5; color: var(--text-main); }
         .news-title a { text-decoration: none; color: inherit; }
-        .news-title a:hover { color: var(--accent); }
 
-        .news-footer {
-            padding: 15px 25px;
-            background: #fcfcfc;
-            border-top: 1px solid var(--border);
-            font-size: 0.8rem;
-            color: var(--gray-medium);
-            display: flex;
-            justify-content: space-between;
+        .news-footer { padding: 15px 20px; background: #fcfcfc; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); }
+
+        /* الأنيميشن والخطأ */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .error-msg { 
+            grid-column: 1 / -1; background: #fff1f2; color: #be123c; 
+            padding: 25px; border-radius: 12px; border: 1px solid #fecaca;
         }
-
-        /* 🚨 رسالة الخطأ */
-        .error-area {
-            grid-column: 1 / -1;
-            background: #fff;
-            border: 2px dashed #f87171;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            color: #b91c1c;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .loading-text { font-weight: 700; color: var(--accent); }
     </style>
 </head>
 <body>
 
+<div class="container">
     <div class="header">
         <h1>What is New?</h1>
-        <p class="subtitle">أحدث الأخبار العالمية بتصميم رمادي عصري</p>
+        <p class="subtitle">نشرة الأخبار العالمية بتصميم رمادي عصري</p>
     </div>
 
-    <div class="btn-wrapper">
-        <button id="fetchBtn" onclick="loadWorldNews()">🔄 تحديث النشرة الإخبارية</button>
-    </div>
+    <button id="fetchBtn" onclick="fetchNews()">🔄 تحديث النشرة الآن</button>
 
     <div id="news-grid">
         </div>
+</div>
 
-    <script>
-        // مفتاح الـ API الخاص بك
-        const API_KEY = "55e30d5c653ea217c8bc9d69e4225099";
+<script>
+    const API_KEY = "55e30d5c653ea217c8bc9d69e4225099";
 
-        async function loadWorldNews() {
-            const grid = document.getElementById("news-grid");
-            const btn = document.getElementById("fetchBtn");
+    async function fetchNews() {
+        const grid = document.getElementById("news-grid");
+        const btn = document.getElementById("fetchBtn");
 
-            btn.disabled = true;
-            btn.innerHTML = "<span class='loading-text'>⏳ جاري اختراق حماية المتصفح...</span>";
-            grid.innerHTML = "";
+        btn.disabled = true;
+        btn.innerText = "⏳ جاري كسر الحماية وجلب البيانات...";
+        grid.innerHTML = "";
 
-            try {
-                // الرابط الأصلي
-                const targetUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=10&apikey=${API_KEY}`;
-                
-                // 🕵️ الوسيط المخادع الجديد والمستقر (corsproxy.io)
-                // هذا الوسيط يقوم بفك حماية CORS تماماً ويجعل الطلب يمر بنجاح
-                const sneakyProxy = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+        try {
+            // 🕵️ الطريقة السحرية: نطلب البيانات كـ String ونقوم بتحليلها بأنفسنا
+            const targetUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=10&apikey=${API_KEY}`;
+            const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}&t=${Date.now()}`;
 
-                const response = await fetch(sneakyProxy);
-                
-                if (!response.ok) throw new Error("السيرفر لا يستجيب حالياً.");
+            const res = await fetch(proxy);
+            if (!res.ok) throw new Error("الوسيط لا يستجيب");
+            
+            const wrapper = await res.json();
+            // تحويل المحتوى النصي إلى JSON حقيقي
+            const data = JSON.parse(wrapper.contents);
 
-                const data = await response.json();
-
-                if (data.articles && data.articles.length > 0) {
-                    data.articles.forEach((article, index) => {
-                        const card = document.createElement("div");
-                        card.className = "news-card";
-                        card.style.animationDelay = (index * 0.1) + "s";
-                        
-                        card.innerHTML = `
-                            ${article.image ? `<img src="${article.image}" class="news-image" alt="news">` : `<div class="news-image" style="display:flex; align-items:center; justify-content:center; color:#94a3b8">لا توجد صورة</div>`}
-                            <div class="news-content">
-                                <span class="source-label">🌐 ${article.source.name}</span>
-                                <h2 class="news-title">
-                                    <a href="${article.url}" target="_blank">${article.title}</a>
-                                </h2>
+            if (data.articles && data.articles.length > 0) {
+                data.articles.forEach((item, index) => {
+                    const card = `
+                        <div class="news-card" style="animation-delay: ${index * 0.1}s">
+                            <img class="news-img" src="${item.image || 'https://via.placeholder.com/400x200?text=No+Image'}" alt="img">
+                            <div class="news-body">
+                                <span class="source-tag">📍 ${item.source.name}</span>
+                                <h3 class="news-title"><a href="${item.url}" target="_blank">${item.title}</a></h3>
                             </div>
                             <div class="news-footer">
-                                <span>🗓️ ${new Date(article.publishedAt).toLocaleDateString('ar-EG')}</span>
-                                <span>🕐 ${getTimeAgo(new Date(article.publishedAt))}</span>
+                                🕐 نُشر في: ${new Date(item.publishedAt).toLocaleDateString('ar-EG')}
                             </div>
-                        `;
-                        grid.appendChild(card);
-                    });
-                } else {
-                    throw new Error("لا توجد أخبار متاحة حالياً، جرب لاحقاً.");
-                }
-
-            } catch (err) {
-                grid.innerHTML = `
-                    <div class="error-area">
-                        <h3>❌ فشل جلب الأخبار</h3>
-                        <p>${err.message}</p>
-                        <p style="margin-top:10px; font-size:0.9rem; color:#666">ملاحظة: تأكد من مفتاح الـ API أو اتصال الإنترنت.</p>
-                    </div>`;
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = "🔄 تحديث النشرة الإخبارية";
+                        </div>
+                    `;
+                    grid.innerHTML += card;
+                });
+            } else {
+                throw new Error("لا توجد مقالات متاحة أو انتهت صلاحية المفتاح.");
             }
-        }
 
-        function getTimeAgo(date) {
-            const diff = Math.floor((new Date() - date) / 60000);
-            if (diff < 1) return "الآن";
-            if (diff < 60) return `منذ ${diff} دقيقة`;
-            const hours = Math.floor(diff / 60);
-            if (hours < 24) return `منذ ${hours} ساعة`;
-            return `منذ ${Math.floor(hours / 24)} يوم`;
+        } catch (error) {
+            grid.innerHTML = `
+                <div class="error-msg">
+                    <h3>❌ فشل في جلب الأخبار</h3>
+                    <p>${error.message}</p>
+                    <p style="margin-top:10px; font-size:0.9rem;">تأكد أن مفتاح الـ API يعمل، أو جرب تحديث الصفحة بعد قليل.</p>
+                </div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "🔄 تحديث النشرة الآن";
         }
-    </script>
+    }
+
+    // جلب الأخبار تلقائياً عند فتح الموقع
+    window.onload = fetchNews;
+</script>
+
 </body>
 </html>
