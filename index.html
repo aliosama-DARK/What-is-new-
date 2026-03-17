@@ -3,153 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What is New? | النسخة الرمادية الاحترافية</title>
+    <title>What is New? | Pro Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* 🎨 التصميم الرمادي (Slate & Silver) */
         :root {
-            --bg-page: #f1f5f9;
-            --bg-card: #ffffff;
-            --gray-dark: #1e293b;
-            --gray-medium: #475569;
-            --gray-light: #94a3b8;
-            --accent: #334155; /* رمادي صخري غامق */
-            --border: #e2e8f0;
+            --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --gray-sub: #71717a;
+            --accent: #27272a; --border: #e4e4e7;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-
-        body { 
-            background-color: var(--bg-page); 
-            color: var(--gray-dark);
-            padding: 40px 20px;
-        }
-
-        .header { text-align: center; margin-bottom: 40px; }
-        h1 { font-size: 3rem; font-weight: 900; color: var(--gray-dark); }
-        .subtitle { color: var(--gray-medium); font-size: 1.1rem; }
-
-        /* منطقة الزر */
-        .controls { text-align: center; margin-bottom: 50px; }
+        body { background-color: var(--bg); color: var(--text); padding: 40px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; text-align: center; }
+        h1 { font-size: 3rem; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
+        .subtitle { color: var(--gray-sub); margin-bottom: 40px; }
+        
         #fetchBtn {
-            background-color: var(--accent);
-            color: white; border: none; padding: 18px 45px;
-            font-size: 1.1rem; font-weight: 700; border-radius: 12px;
-            cursor: pointer; transition: 0.3s;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            background-color: var(--accent); color: white; border: none;
+            padding: 16px 40px; font-size: 1.1rem; font-weight: 700;
+            border-radius: 8px; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
-        #fetchBtn:hover { background-color: #0f172a; transform: translateY(-2px); }
-        #fetchBtn:disabled { background-color: #94a3b8; cursor: wait; }
+        #fetchBtn:hover { background-color: #000; transform: translateY(-2px); }
+        #fetchBtn:disabled { background-color: #a1a1aa; cursor: not-allowed; }
 
-        /* شبكة الأخبار - 3 أعمدة احترافية */
         #news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px; margin-top: 40px;
         }
-
-        .news-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            transition: 0.4s;
-            animation: slideIn 0.5s ease-out forwards;
+        .card {
+            background: var(--card); border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border); transition: 0.3s; text-align: right;
+            display: flex; flex-direction: column;
         }
-        .news-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px rgba(0,0,0,0.05); }
-
-        .news-img { width: 100%; height: 210px; object-fit: cover; background: #cbd5e1; }
-
-        .news-content { padding: 25px; flex-grow: 1; }
-        .source-tag { font-size: 0.8rem; color: var(--gray-medium); font-weight: 700; display: block; margin-bottom: 10px; }
-        .news-title { font-size: 1.2rem; font-weight: 700; line-height: 1.5; margin-bottom: 15px; }
-        .news-title a { text-decoration: none; color: inherit; transition: 0.2s; }
-        .news-title a:hover { color: #64748b; }
-
-        .news-footer { 
-            padding: 15px 25px; background: #f8fafc; 
-            border-top: 1px solid var(--border); 
-            font-size: 0.8rem; color: var(--gray-light);
-        }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .error-box { grid-column: 1/-1; background: #fff; padding: 30px; border-radius: 15px; border: 2px dashed #f87171; text-align: center; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .card-img { width: 100%; height: 180px; object-fit: cover; background: #d4d4d8; }
+        .card-body { padding: 20px; flex-grow: 1; }
+        .card-source { font-size: 0.75rem; color: var(--gray-sub); font-weight: 700; }
+        .card-title { font-size: 1.1rem; margin: 10px 0; line-height: 1.5; }
+        .card-title a { text-decoration: none; color: inherit; }
+        .card-footer { padding: 12px 20px; background: #fafafa; border-top: 1px solid var(--border); font-size: 0.75rem; color: #a1a1aa; }
+        
+        .error-box { grid-column: 1/-1; background: #fff1f2; color: #991b1b; padding: 25px; border-radius: 8px; border: 1px solid #fecaca; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>What is New?</h1>
-        <p class="subtitle">أحدث الأخبار العالمية بتصميم رمادي عصري</p>
-    </div>
+<div class="container">
+    <h1>What is New?</h1>
+    <p class="subtitle">تصميم رمادي عصري - جلب أخبار ذكي</p>
+    <button id="fetchBtn" onclick="smartFetch()">🔄 تحديث الأخبار الآن</button>
+    <div id="news-grid"></div>
+</div>
 
-    <div class="controls">
-        <button id="fetchBtn" onclick="fetchWorldNews()">🔄 تحديث الأخبار الآن</button>
-    </div>
+<script>
+    const API_KEY = "55e30d5c653ea217c8bc9d69e4225099";
 
-    <div id="news-grid">
-        </div>
+    async function smartFetch() {
+        const grid = document.getElementById("news-grid");
+        const btn = document.getElementById("fetchBtn");
+        btn.disabled = true; btn.innerText = "⏳ جاري محاولة الجلب...";
+        grid.innerHTML = "";
 
-    <script>
-        // مفتاحك
-        const API_KEY = "55e30d5c653ea217c8bc9d69e4225099";
+        // الرابط الأصلي مع كاسر للكاش (Random Number)
+        const target = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=10&apikey=${API_KEY}&v=${Math.random()}`;
+        
+        // جربنا وسيطين (Proxies) لضمان العمل
+        const proxies = [
+            `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`,
+            `https://corsproxy.io/?${encodeURIComponent(target)}`
+        ];
 
-        async function fetchWorldNews() {
-            const grid = document.getElementById("news-grid");
-            const btn = document.getElementById("fetchBtn");
+        let success = false;
 
-            btn.disabled = true;
-            btn.innerHTML = "⏳ جاري جلب أحدث القصص...";
-            grid.innerHTML = ""; // مسح الأخبار القديمة فوراً
-
+        for (let proxy of proxies) {
             try {
-                // 🕵️ الخدعة: إضافة timestamp (وقت حالي) للرابط لمنع الكاش نهائياً
-                const timestamp = new Date().getTime();
-                const targetUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=10&apikey=${API_KEY}&t=${timestamp}`;
-                
-                // استخدام الوسيط المخادع
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-
-                const response = await fetch(proxyUrl);
-                const result = await response.json();
-                const data = JSON.parse(result.contents);
+                const res = await fetch(proxy);
+                const result = await res.json();
+                // بعض البروكسيات تعيد المحتوى داخل contents وبعضها مباشر
+                const data = result.contents ? JSON.parse(result.contents) : result;
 
                 if (data.articles && data.articles.length > 0) {
-                    data.articles.forEach((news, index) => {
-                        const card = document.createElement("div");
-                        card.className = "news-card";
-                        card.style.animationDelay = (index * 0.1) + "s";
-                        card.innerHTML = `
-                            ${news.image ? `<img src="${news.image}" class="news-img" alt="img">` : `<div class="news-img" style="display:flex;align-items:center;justify-content:center">لا يوجد صورة</div>`}
-                            <div class="news-content">
-                                <span class="source-tag">📍 ${news.source.name}</span>
-                                <h2 class="news-title"><a href="${news.url}" target="_blank">${news.title}</a></h2>
-                            </div>
-                            <div class="news-footer">
-                                🕐 نُشر في: ${new Date(news.publishedAt).toLocaleDateString('ar-EG')}
-                            </div>
-                        `;
-                        grid.appendChild(card);
-                    });
-                } else {
-                    throw new Error("لم نجد أخباراً جديدة حالياً.");
+                    renderNews(data.articles);
+                    success = true;
+                    break; // توقف إذا نجح أحد البروكسيات
                 }
-
-            } catch (err) {
-                grid.innerHTML = `<div class="error-box"><h3>❌ فشل التحديث</h3><p>${err.message}</p></div>`;
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = "🔄 تحديث الأخبار الآن";
+            } catch (e) {
+                console.log("الوسيط فشل، نجرب التالي...");
             }
         }
 
-        // تشغيل تلقائي عند الفتح
-        window.onload = fetchWorldNews;
-    </script>
+        if (!success) {
+            grid.innerHTML = `
+                <div class="error-box">
+                    <h3>❌ فشل الجلب النهائي</h3>
+                    <p>أسباب محتملة: 1. مفتاح الـ API تجاوز حد 100 طلب اليوم. 2. لا يوجد اتصال إنترنت.</p>
+                </div>`;
+        }
+        btn.disabled = false; btn.innerText = "🔄 تحديث الأخبار الآن";
+    }
+
+    function renderNews(articles) {
+        const grid = document.getElementById("news-grid");
+        articles.forEach(art => {
+            grid.innerHTML += `
+                <div class="card">
+                    <img class="card-img" src="${art.image || 'https://via.placeholder.com/400x200?text=No+Image'}" alt="img">
+                    <div class="card-body">
+                        <span class="card-source">📍 ${art.source.name}</span>
+                        <h3 class="card-title"><a href="${art.url}" target="_blank">${art.title}</a></h3>
+                    </div>
+                    <div class="card-footer">📅 ${new Date(art.publishedAt).toLocaleDateString('ar-EG')}</div>
+                </div>`;
+        });
+    }
+
+    window.onload = smartFetch;
+</script>
 </body>
 </html>
