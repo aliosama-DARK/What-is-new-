@@ -1,255 +1,73 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>What is New? | أحدث الأخبار</title>
-  <style>
-    :root {
-      --primary: #3b82f6;
-      --bg: #f3f4f6;
-      --text-main: #1f2937;
-      --text-muted: #6b7280;
-    }
+<script>
+  // ضع المفتاح الجديد هنا
+  const API_KEY = "NEW_API_KEY_HERE";
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  // بروكسي مجاني/خاص (لاستعمالك، يفترض أن يكون آمنًا)
+  const PROXY_URL = "https://api.allorigins.win/raw?url=";
+  // بدائل شائعة:
+  // https://cors-anywhere.herokuapp.com/
+  // https://cors.bridged.cc/
+  // أو سيرفرك الخاص: https://your-proxy.example.com/?u=
 
-    body {
-      background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-      color: var(--text-main);
-    }
+  async function fetchNews() {
+    const btn = document.getElementById("fetchBtn");
+    const status = document.getElementById("status");
+    const container = document.getElementById("news-container");
 
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
+    btn.disabled = true;
+    btn.innerHTML = "⏳ جاري البحث...";
+    container.innerHTML = "";
 
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 10px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+    try {
+      const urlBase = `https://gnews.io/api/v4/top-headlines?lang=ar&max=10&apikey=${API_KEY}`;
+      const url = `${PROXY_URL}${encodeURIComponent(urlBase)}`;
+      const res = await fetch(url);
+      const data = await res.json();
 
-    .subtitle {
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    #fetchBtn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 16px 40px;
-      font-size: 1.2rem;
-      font-weight: 600;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    #fetchBtn:hover {
-      background-color: #2563eb;
-      transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4);
-    }
-
-    #fetchBtn:active { transform: translateY(0); }
-
-    #fetchBtn:disabled {
-      background-color: #9ca3af;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    #status {
-      margin-top: 20px;
-      font-weight: 500;
-      color: var(--primary);
-    }
-
-    #news-container {
-      margin-top: 30px;
-      width: 100%;
-      max-width: 850px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-
-    .news-card {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 0;
-      overflow: hidden;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid rgba(255,255,255,0.3);
-      animation: fadeIn 0.5s ease forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .news-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    }
-
-    .news-image {
-      width: 100%;
-      height: 250px;
-      object-fit: cover;
-    }
-
-    .news-content {
-      padding: 24px;
-    }
-
-    .news-source {
-      background: #dbeafe;
-      color: #1e40af;
-      padding: 4px 12px;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      display: inline-block;
-      margin-bottom: 12px;
-    }
-
-    .news-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-      line-height: 1.4;
-    }
-
-    .news-title a {
-      text-decoration: none;
-      color: var(--text-main);
-      transition: color 0.2s;
-    }
-
-    .news-title a:hover { color: var(--primary); }
-
-    .news-desc {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 15px;
-    }
-
-    .news-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: #9ca3af;
-      border-top: 1px solid #f3f4f6;
-      padding-top: 15px;
-    }
-
-    .error-card {
-      background: #fee2e2;
-      color: #b91c1c;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      border: 1px solid #fecaca;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="header">
-    <h1>📰 What is New?</h1>
-    <p class="subtitle">استكشف العالم من حولك بضغطة زر</p>
-  </div>
-
-  <button id="fetchBtn" onclick="fetchNews()">
-    <span>🔍</span> اكتشف آخر 10 أخبار
-  </button>
-  
-  <p id="status"></p>
-  
-  <div id="news-container"></div>
-
-  <script>
-    const API_KEY = "ac079b8cbbc61d5541a20a769bcf4651";
-
-    async function fetchNews() {
-      const btn = document.getElementById("fetchBtn");
-      const status = document.getElementById("status");
-      const container = document.getElementById("news-container");
-
-      btn.disabled = true;
-      btn.innerHTML = "⏳ جاري البحث...";
-      container.innerHTML = "";
-
-      try {
-        // تم تعديل max ليكون 10 و lang ليكون ar (عربي)
-        const url = `https://gnews.io/api/v4/top-headlines?lang=ar&max=10&apikey=${API_KEY}`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (!res.ok) throw new Error(data.errors?.[0] || "فشل الاتصال");
-
-        if (!data.articles?.length) {
-          container.innerHTML = `<div class="error-card">😕 لا توجد أخبار جديدة حالياً.</div>`;
-        } else {
-          data.articles.forEach((article, index) => {
-            const card = document.createElement("div");
-            card.className = "news-card";
-            // إضافة تأخير بسيط للأنيميشن لكل كرت
-            card.style.animationDelay = `${index * 0.1}s`;
-            
-            card.innerHTML = `
-              ${article.image ? `<img class="news-image" src="${article.image}" alt="news">` : ""}
-              <div class="news-content">
-                <span class="news-source">📌 ${article.source.name}</span>
-                <h3 class="news-title">
-                  <a href="${article.url}" target="_blank">${article.title}</a>
-                </h3>
-                <p class="news-desc">${article.description || "لا يوجد وصف متاح لهذا الخبر."}</p>
-                <div class="news-meta">
-                  <span>🗓️ ${new Date(article.publishedAt).toLocaleDateString('ar-EG')}</span>
-                  <span>🕐 ${getTimeAgo(new Date(article.publishedAt))}</span>
-                </div>
-              </div>
-            `;
-            container.appendChild(card);
-          });
-          status.textContent = `✅ تم تحديث الأخبار بنجاح`;
-        }
-      } catch (err) {
-        container.innerHTML = `<div class="error-card">❌ خطأ: ${err.message}</div>`;
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = "🔄 تحديث القائمة";
+      if (!res.ok) {
+        throw new Error(data.errors?.[0] || data.message || "فشل الاتصال");
       }
-    }
 
-    function getTimeAgo(date) {
-      const diff = Math.floor((new Date() - date) / 60000);
-      if (diff < 1) return "الآن";
-      if (diff < 60) return `منذ ${diff} دقيقة`;
-      const hours = Math.floor(diff / 60);
-      if (hours < 24) return `منذ ${hours} ساعة`;
-      return `منذ ${Math.floor(hours / 24)} يوم`;
+      if (!data.articles?.length) {
+        container.innerHTML = `<div class="error-card">😕 لا توجد أخبار جديدة حالياً.</div>`;
+      } else {
+        data.articles.forEach((article, index) => {
+          const card = document.createElement("div");
+          card.className = "news-card";
+          card.style.animationDelay = `${index * 0.1}s`;
+          card.innerHTML = `
+            ${article.image ? `<img class="news-image" src="${article.image}" alt="news">` : ""}
+            <div class="news-content">
+              <span class="news-source">📌 ${article.source.name}</span>
+              <h3 class="news-title">
+                <a href="${article.url}" target="_blank">${article.title}</a>
+              </h3>
+              <p class="news-desc">${article.description || "لا يوجد وصف متاح لهذا الخبر."}</p>
+              <div class="news-meta">
+                <span>🗓️ ${new Date(article.publishedAt).toLocaleDateString('ar-EG')}</span>
+                <span>🕐 ${getTimeAgo(new Date(article.publishedAt))}</span>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        status.textContent = `✅ تم تحديث الأخبار بنجاح (10 أخبار)`;
+      }
+    } catch (err) {
+      container.innerHTML = `<div class="error-card">❌ خطأ: ${err.message}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = "🔄 تحديث القائمة";
     }
-  </script>
-</body>
-</html>
+  }
+
+  function getTimeAgo(date) {
+    const diff = Math.floor((new Date() - date) / 60000);
+    if (diff < 1) return "الآن";
+    if (diff < 60) return `منذ ${diff} دقيقة`;
+    const hours = Math.floor(diff / 60);
+    if (hours < 24) return `منذ ${hours} ساعة`;
+    return `منذ ${Math.floor(hours / 24)} يوم`;
+  }
+</script>
