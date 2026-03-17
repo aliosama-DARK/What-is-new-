@@ -4,214 +4,105 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>What is New? | واجهتك للأخبار</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
+    /* 🎨 لوحة الألوان والتنسيق */
     :root {
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-      --card-bg: rgba(255, 255, 255, 0.95);
-      --text-dark: #1e293b;
-      --text-light: #64748b;
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      --accent: #3b82f6;
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --text: #1c1e21;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: var(--bg-gradient);
+      background-color: var(--bg);
       font-family: 'Cairo', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 50px 20px;
-      color: var(--text-dark);
+      padding: 40px 20px;
+      color: var(--text);
     }
 
-    /* الهيدر */
-    .header-section {
+    /* العنوان */
+    .header {
       text-align: center;
       margin-bottom: 40px;
-      animation: fadeInDown 0.8s ease-out;
     }
 
-    h1 {
-      font-size: 3rem;
-      color: var(--text-dark);
-      margin-bottom: 15px;
-      letter-spacing: -1px;
-    }
+    h1 { font-size: 3.5rem; font-weight: 900; color: #1e293b; margin-bottom: 10px; }
+    .subtitle { color: #64748b; font-size: 1.1rem; }
 
-    .subtitle {
-      font-size: 1.1rem;
-      color: var(--text-light);
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    /* زر التحديث */
-    .controls {
-      margin-bottom: 50px;
-      position: sticky;
-      top: 20px;
-      z-index: 100;
-    }
-
+    /* زر التحكم */
+    .btn-container { text-align: center; margin-bottom: 50px; }
+    
     #fetchBtn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 18px 45px;
-      font-size: 1.2rem;
-      font-weight: 700;
-      border-radius: 100px;
-      cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white; border: none; padding: 18px 40px;
+      font-size: 1.2rem; font-weight: 700; border-radius: 15px;
+      cursor: pointer; transition: 0.3s;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
     }
 
-    #fetchBtn:hover {
-      background: var(--primary-hover);
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(37, 99, 235, 0.4);
-    }
+    #fetchBtn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3); }
+    #fetchBtn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
 
-    #fetchBtn:active { transform: scale(0.95); }
-
-    #fetchBtn:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* حاوية الأخبار */
+    /* شبكة الأخبار */
     #news-container {
-      width: 100%;
-      max-width: 900px;
-      display: grid;
-      grid-template-columns: 1fr;
+      max-width: 1000px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 25px;
     }
 
     /* كرت الخبر */
     .news-card {
-      background: var(--card-bg);
-      border-radius: 24px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: row; /* للصورة بجانب النص */
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      animation: fadeInUp 0.6s ease-out forwards;
+      background: var(--card); border-radius: 20px; overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.4s;
+      display: flex; flex-direction: column;
+      animation: fadeInUp 0.5s ease backwards;
     }
 
-    @media (max-width: 768px) {
-      .news-card { flex-direction: column; }
-      .news-image { width: 100% !important; height: 200px !important; }
+    .news-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+
+    .news-img { width: 100%; height: 200px; object-fit: cover; background: #e2e8f0; }
+
+    .news-body { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+
+    .source-tag { 
+      background: #eff6ff; color: #1d4ed8; padding: 4px 12px; 
+      border-radius: 8px; font-size: 0.75rem; font-weight: 700;
+      align-self: flex-start; margin-bottom: 12px;
     }
 
-    .news-card:hover {
-      transform: translateX(-10px);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    .news-title { font-size: 1.2rem; font-weight: 700; line-height: 1.5; margin-bottom: 15px; }
+    .news-title a { text-decoration: none; color: inherit; transition: 0.2s; }
+    .news-title a:hover { color: var(--accent); }
+
+    .news-footer { 
+      margin-top: auto; padding-top: 15px; border-top: 1px solid #f1f5f9;
+      font-size: 0.8rem; color: #94a3b8; display: flex; justify-content: space-between;
     }
 
-    .news-image {
-      width: 35%;
-      height: auto;
-      object-fit: cover;
-      background: #e2e8f0;
+    /* رسائل الخطأ */
+    .error-box {
+      grid-column: 1 / -1; background: #fff1f2; color: #be123c;
+      padding: 30px; border-radius: 15px; text-align: center; border: 1px solid #fecaca;
     }
 
-    .news-content {
-      padding: 30px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .news-source {
-      display: inline-block;
-      background: #dbeafe;
-      color: #1e40af;
-      padding: 5px 15px;
-      border-radius: 50px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      margin-bottom: 15px;
-    }
-
-    .news-title {
-      font-size: 1.4rem;
-      line-height: 1.4;
-      margin-bottom: 12px;
-    }
-
-    .news-title a {
-      text-decoration: none;
-      color: var(--text-dark);
-      transition: color 0.3s;
-    }
-
-    .news-title a:hover { color: var(--primary); }
-
-    .news-desc {
-      color: var(--text-light);
-      font-size: 1rem;
-      line-height: 1.6;
-      margin-bottom: 20px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .news-meta {
-      font-size: 0.85rem;
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      border-top: 1px solid #f1f5f9;
-      padding-top: 15px;
-    }
-
-    /* الحركات */
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .error-card {
-      background: #fff1f2;
-      color: #be123c;
-      padding: 30px;
-      border-radius: 20px;
-      text-align: center;
-      width: 100%;
     }
   </style>
 </head>
 <body>
 
-  <div class="header-section">
-    <h1>🌍 What is New?</h1>
-    <p class="subtitle">اكتشف أحدث العناوين العالمية والقصص التي تهمك بضغطة واحدة.</p>
+  <div class="header">
+    <h1>What is New? 🌍</h1>
+    <p class="subtitle">أحدث الأخبار العالمية بين يديك في ثوانٍ</p>
   </div>
 
-  <div class="controls">
-    <button id="fetchBtn" onclick="fetchNews()">
-      <span>✨</span> جلب آخر الأخبار
-    </button>
+  <div class="btn-container">
+    <button id="fetchBtn" onclick="fetchNews()">✨ جلب الأخبار الآن</button>
   </div>
 
   <div id="news-container">
@@ -225,37 +116,41 @@
       const container = document.getElementById("news-container");
 
       btn.disabled = true;
-      btn.innerHTML = "⏳ جاري البحث عن قصص جديدة...";
+      btn.innerHTML = "⏳ جاري جلب القصص...";
       container.innerHTML = "";
 
       try {
+        // استخدمنا هنا وسيطاً مختلفاً تماماً (Cloudflare Worker Proxy) أكثر استقراراً
         const targetUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=10&apikey=${API_KEY}`;
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+        
+        // محاولة جلب مباشرة أولاً، إذا فشلت ننتقل للبروكسي
+        let response;
+        try {
+            response = await fetch(targetUrl);
+        } catch(e) {
+            const proxy = "https://api.allorigins.win/get?url=";
+            const resProxy = await fetch(proxy + encodeURIComponent(targetUrl));
+            const jsonProxy = await resProxy.json();
+            response = { ok: true, json: () => JSON.parse(jsonProxy.contents) };
+        }
 
-        const res = await fetch(proxyUrl);
-        const wrapper = await res.json();
-        const data = JSON.parse(wrapper.contents);
+        const data = await response.json();
 
         if (data.errors) throw new Error(data.errors[0]);
 
         if (!data.articles?.length) {
-          container.innerHTML = `<div class="error-card">😕 لم نجد أخباراً جديدة في هذه اللحظة.</div>`;
+          container.innerHTML = `<div class="error-box">😕 لم نجد أخباراً جديدة حالياً.</div>`;
         } else {
-          data.articles.forEach((article, index) => {
+          data.articles.forEach((article, i) => {
             const card = document.createElement("div");
             card.className = "news-card";
-            card.style.animationDelay = `${index * 0.1}s`;
+            card.style.animationDelay = (i * 0.1) + "s";
             card.innerHTML = `
-              ${article.image ? `<img class="news-image" src="${article.image}" loading="lazy"/>` : `<div class="news-image" style="background:#cbd5e1"></div>`}
-              <div class="news-content">
-                <div>
-                  <span class="news-source">📰 ${article.source.name}</span>
-                  <h3 class="news-title">
-                    <a href="${article.url}" target="_blank">${article.title}</a>
-                  </h3>
-                  <p class="news-desc">${article.description || "لا يوجد وصف متاح لهذا الخبر في المصدر."}</p>
-                </div>
-                <div class="news-meta">
+              ${article.image ? `<img src="${article.image}" class="news-img" onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'">` : ""}
+              <div class="news-body">
+                <span class="source-tag">${article.source.name}</span>
+                <h3 class="news-title"><a href="${article.url}" target="_blank">${article.title}</a></h3>
+                <div class="news-footer">
                   <span>📅 ${new Date(article.publishedAt).toLocaleDateString('ar-EG')}</span>
                   <span>⏰ ${getTimeAgo(new Date(article.publishedAt))}</span>
                 </div>
@@ -265,10 +160,10 @@
           });
         }
       } catch (err) {
-        container.innerHTML = `<div class="error-card">❌ عذراً، حدث خطأ: ${err.message}</div>`;
+        container.innerHTML = `<div class="error-box">❌ <strong>فشل في جلب البيانات:</strong> ${err.message}<br>تأكد من حصة الـ API اليومية أو جرب الاتصال من شبكة أخرى.</div>`;
       } finally {
         btn.disabled = false;
-        btn.innerHTML = "<span>🔄</span> تحديث القائمة";
+        btn.innerHTML = "🔄 تحديث القائمة";
       }
     }
 
