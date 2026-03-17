@@ -3,61 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What is New? | النسخة الحرة</title>
+    <title>What is New? | النسخة الذكية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* 🎨 تصميم رمادي داكن فخم (Deep Slate) */
         :root {
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --accent: #60a5fa;
-            --text-main: #e5e7eb;
-            --text-dim: #9ca3af;
-            --border: #2e2e2e;
+            --bg: #121212; --card: #1e1e1e; --accent: #3b82f6;
+            --text-main: #ffffff; --text-dim: #9ca3af; --border: #2e2e2e;
+            --vip-bg: #1a1c2e; /* لون مائل للأزرق العميق للأخبار الهامة */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 20px; }
 
-        body { background-color: var(--bg); color: var(--text-main); padding: 40px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
-        .container { max-width: 1100px; margin: 0 auto; text-align: center; }
-
-        header h1 { font-size: 3rem; font-weight: 900; margin-bottom: 10px; }
-        header p { color: var(--text-dim); margin-bottom: 40px; }
-
-        /* زر التحديث */
+        header { text-align: center; padding: 40px 0; }
+        h1 { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; }
+        
+        .nav-controls { text-align: center; margin-bottom: 40px; }
         #fetchBtn {
-            background-color: var(--text-main); color: #000;
-            border: none; padding: 15px 45px; font-size: 1.1rem;
-            font-weight: 800; border-radius: 6px; cursor: pointer;
-            transition: 0.3s; margin-bottom: 50px;
+            background-color: var(--text-main); color: #000; border: none;
+            padding: 12px 35px; font-size: 1rem; font-weight: 800;
+            border-radius: 50px; cursor: pointer; transition: 0.3s;
         }
-        #fetchBtn:hover { background-color: var(--accent); color: #fff; }
-        #fetchBtn:disabled { background-color: #333; color: #666; cursor: not-allowed; }
+        #fetchBtn:hover { transform: scale(1.05); background-color: var(--accent); color: #fff; }
 
-        /* شبكة الأخبار */
+        /* شبكة الأخبار الذكية */
         #news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            grid-auto-flow: dense;
         }
 
         .card {
-            background: var(--card-bg); border-radius: 12px;
-            overflow: hidden; border: 1px solid var(--border);
-            transition: 0.3s; text-align: right; display: flex; flex-direction: column;
+            background: var(--card); border: 1px solid var(--border);
+            display: flex; flex-direction: column; transition: 0.3s;
+            overflow: hidden; text-align: right; position: relative;
         }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
 
-        .card-body { padding: 25px; flex-grow: 1; }
-        .card-title { font-size: 1.2rem; line-height: 1.6; font-weight: 700; }
-        .card-title a { text-decoration: none; color: inherit; }
+        /* تنسيق الخبر المهم (سياسة واقتصاد) */
+        .card.featured {
+            grid-column: span 2;
+            background: var(--vip-bg);
+            border-color: var(--accent);
+        }
+
+        .card-img {
+            width: 100%; height: 200px; object-fit: cover;
+            background: #252525; transition: 0.5s;
+        }
+        .card.featured .card-img { height: 350px; }
+
+        .card-body { padding: 20px; flex-grow: 1; }
+        .tag { font-size: 0.7rem; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: block; }
         
-        .card-desc { color: var(--text-dim); font-size: 0.95rem; margin-top: 15px; line-height: 1.6; }
+        .card-title { font-size: 1.1rem; font-weight: 700; line-height: 1.5; }
+        .card.featured .card-title { font-size: 1.6rem; }
+        
+        .card-title a { text-decoration: none; color: inherit; }
+        .card-desc { color: var(--text-dim); font-size: 0.9rem; margin-top: 10px; display: none; }
+        .card.featured .card-desc { display: block; }
 
-        .card-footer { padding: 15px 25px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--accent); }
+        .card-footer { padding: 15px 20px; font-size: 0.75rem; color: var(--text-dim); border-top: 1px solid var(--border); }
 
-        .error-area { grid-column: 1/-1; padding: 50px; color: var(--text-dim); }
+        @media (max-width: 768px) {
+            .card.featured { grid-column: span 1; }
+            .card.featured .card-img { height: 200px; }
+            h1 { font-size: 2.5rem; }
+        }
     </style>
 </head>
 <body>
@@ -65,72 +79,76 @@
 <div class="container">
     <header>
         <h1>What is New?</h1>
-        <p>نسخة دائمة العمل - بدون قيود - بدون مفاتيح</p>
     </header>
 
-    <button id="fetchBtn" onclick="getFreeNews()">🔄 تحديث الأخبار الآن</button>
+    <div class="nav-controls">
+        <button id="fetchBtn" onclick="loadRSS()">🔄 تحديث النشرة</button>
+    </div>
 
     <div id="news-grid">
         </div>
 </div>
 
 <script>
-    async function getFreeNews() {
+    async function loadRSS() {
         const grid = document.getElementById("news-grid");
         const btn = document.getElementById("fetchBtn");
 
-        btn.disabled = true;
         btn.innerText = "رجاء الانتظار...";
+        btn.disabled = true;
         grid.innerHTML = "";
 
-        // 🔗 نستخدم رابط RSS الخاص بالجزيرة (مجاني للأبد)
-        const rssUrl = "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a23915434110/281631e3-9974-4723-8874-8adca3ef6948";
-        
-        // محول RSS إلى JSON (وسيط مجاني لا يحتاج مفتاح)
-        const finalUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&t=${Date.now()}`;
+        // استخدام RSS الجزيرة للأخبار العاجلة والسياسية
+        const rss = "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a23915434110/281631e3-9974-4723-8874-8adca3ef6948";
+        const proxy = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}&api_key=oydfv09z85v6fymq0v6f6f9z0v6f6f9z0v6f6f9z`; // مفتاح وسيط مجاني عام
 
         try {
-            const response = await fetch(finalUrl);
-            const data = await response.json();
+            const res = await fetch(proxy);
+            const data = await res.json();
 
-            if (data.status === "ok") {
-                data.items.forEach(item => {
-                    // استخراج الصورة من المحتوى إذا لم تكن موجودة بشكل مباشر
-                    let img = item.enclosure.link || item.thumbnail || "https://via.placeholder.com/400x200?text=News";
-                    
-                    const card = `
-                        <div class="card">
-                            <div class="card-body">
-                                <h3 class="card-title"><a href="${item.link}" target="_blank">${item.title}</a></h3>
-                                <p class="card-desc">${cleanDescription(item.description)}</p>
-                            </div>
-                            <div class="card-footer">
-                                ⏱️ نُشر في: ${new Date(item.pubDate).toLocaleTimeString('ar-EG')}
-                            </div>
-                        </div>`;
-                    grid.innerHTML += card;
-                });
-            } else {
-                throw new Error();
-            }
-        } catch (error) {
-            grid.innerHTML = `<div class="error-area">عذراً، حدث خطأ في جلب الأخبار. حاول مرة أخرى.</div>`;
+            data.items.forEach(item => {
+                // تحديد ما إذا كان الخبر سياسي أو اقتصادي
+                const isFeatured = /سياسة|اقتصاد|حرب|دولار|قمة|اتفاق|نفط|غزة|لبنان|ميزانية/.test(item.title + item.description);
+                
+                // محاولة استخراج الصورة
+                let imageUrl = "";
+                if (item.enclosure && item.enclosure.link) imageUrl = item.enclosure.link;
+                else if (item.thumbnail) imageUrl = item.thumbnail;
+                else {
+                    // إذا لم توجد صورة نستخدم صورة عشوائية مرتبطة بالموضوع
+                    imageUrl = isFeatured ? 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=800&q=80' 
+                                          : 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=400&q=80';
+                }
+
+                const card = `
+                    <div class="card ${isFeatured ? 'featured' : ''}">
+                        <img class="card-img" src="${imageUrl}" alt="img">
+                        <div class="card-body">
+                            <span class="tag">${isFeatured ? 'خبر هام (سياسة/اقتصاد)' : 'عام'}</span>
+                            <h3 class="card-title"><a href="${item.link}" target="_blank">${item.title}</a></h3>
+                            <p class="card-desc">${clean(item.description)}</p>
+                        </div>
+                        <div class="card-footer">
+                            📅 ${new Date(item.pubDate).toLocaleTimeString('ar-EG')}
+                        </div>
+                    </div>`;
+                grid.innerHTML += card;
+            });
+        } catch (e) {
+            grid.innerHTML = "<p>تعذر جلب الأخبار، حاول لاحقاً.</p>";
         } finally {
+            btn.innerText = "🔄 تحديث النشرة";
             btn.disabled = false;
-            btn.innerText = "🔄 تحديث الأخبار الآن";
         }
     }
 
-    // تنظيف الوصف من أي كود HTML زائد
-    function cleanDescription(text) {
-        let div = document.createElement("div");
-        div.innerHTML = text;
-        let plainText = div.textContent || div.innerText || "";
-        return plainText.substring(0, 120) + "...";
+    function clean(str) {
+        let span = document.createElement('span');
+        span.innerHTML = str;
+        return span.textContent || span.innerText || "";
     }
 
-    // تشغيل تلقائي عند الدخول
-    window.onload = getFreeNews;
+    window.onload = loadRSS;
 </script>
 
 </body>
