@@ -3,162 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What is New? | 2026</title>
+    <title>What is New? | Ultra Dark</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* 🎨 التصميم الرمادي الفخم والراقي */
         :root {
-            --bg-color: #1a1a1b; /* رمادي غامق جداً */
-            --card-bg: #272729; /* رمادي للأخبار */
-            --accent: #4ade80; /* لون التميز (أخضر هادئ) */
-            --text-main: #ffffff;
-            --text-dim: #a1a1aa;
+            --bg: #121212; --card: #1e1e1e; --accent: #8b5cf6;
+            --text: #e5e7eb; --gray: #9ca3af; --border: #333;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 40px 20px;
-        }
-
+        body { background-color: var(--bg); color: var(--text); padding: 50px 20px; }
         .container { max-width: 1200px; margin: 0 auto; text-align: center; }
+        h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 5px; letter-spacing: -1px; }
+        .desc { color: var(--gray); margin-bottom: 40px; }
 
-        header h1 { font-size: 3rem; font-weight: 900; margin-bottom: 10px; color: var(--text-main); }
-        header p { color: var(--text-dim); margin-bottom: 40px; }
-
-        /* زر التحديث - بسيط وراقي */
         #fetchBtn {
-            background-color: #ffffff;
-            color: #000;
-            border: none;
-            padding: 14px 40px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
+            background-color: var(--text); color: #000; border: none;
+            padding: 16px 50px; font-size: 1.1rem; font-weight: 800;
+            border-radius: 4px; cursor: pointer; transition: 0.2s;
         }
-        #fetchBtn:hover { background-color: var(--text-dim); }
-        #fetchBtn:disabled { background-color: #3f3f46; color: #a1a1aa; cursor: not-allowed; }
+        #fetchBtn:hover { background-color: var(--accent); color: #fff; }
+        #fetchBtn:disabled { background-color: #333; color: #666; cursor: not-allowed; }
 
-        /* شبكة الأخبار */
         #news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            margin-top: 50px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px; margin-top: 50px;
         }
-
         .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            text-align: right;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #3f3f46;
+            background: var(--card); border-radius: 0; border: 1px solid var(--border);
+            text-align: right; overflow: hidden; transition: 0.3s;
+            display: flex; flex-direction: column;
         }
-        .card:hover { transform: translateY(-5px); border-color: #52525b; }
-
-        .card-img { width: 100%; height: 200px; object-fit: cover; background: #3f3f46; }
-
-        .card-body { padding: 20px; flex-grow: 1; }
-        .card-source { color: var(--accent); font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; display: block; }
-        .card-title { font-size: 1.15rem; line-height: 1.5; font-weight: 700; }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; filter: grayscale(50%); }
+        .card:hover .card-img { filter: grayscale(0%); }
+        .card-body { padding: 25px; flex-grow: 1; }
+        .card-source { color: var(--accent); font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; display: block; }
+        .card-title { font-size: 1.2rem; line-height: 1.5; font-weight: 700; }
         .card-title a { text-decoration: none; color: inherit; }
-
-        .card-footer { padding: 15px 20px; border-top: 1px solid #3f3f46; font-size: 0.8rem; color: var(--text-dim); }
-
-        .error-area { grid-column: 1/-1; padding: 30px; color: #fb7185; }
+        .card-footer { padding: 15px 25px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--gray); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>What is New?</h1>
-        <p>بوابتك المختصرة لأحدث ما يدور في العالم</p>
-    </header>
-
-    <button id="fetchBtn" onclick="refreshNews()">🔄 تحديث الأخبار الآن</button>
-
-    <div id="news-grid">
-        </div>
+    <h1>What is New?</h1>
+    <p class="desc">تغطية حية لأهم أحداث العالم بتصميم رمادي داكن</p>
+    <button id="fetchBtn" onclick="forceFetch()">🔄 تحديث الأخبار الآن</button>
+    <div id="news-grid"></div>
 </div>
 
 <script>
-    // 🔑 مصفوفة المفاتيح (أضفت لك مفاتيح متنوعة لضمان التغيير)
-    const keys = [
+    // 🕵️ قائمة المفاتيح للتدوير الصامت
+    const vault = [
         "ac079469e54d30c5980004940f504651",
         "55e30d5c653ea217c8bc9d69e4225099",
-        "28659560f22496739343209506648792"
+        "ac079469e54d30c5980004940f504651" 
     ];
-    let keyIndex = 0;
+    let activeIndex = 0;
 
-    async function refreshNews() {
+    async function forceFetch() {
         const grid = document.getElementById("news-grid");
         const btn = document.getElementById("fetchBtn");
-
         btn.disabled = true;
-        btn.innerText = "رجاء الانتظار..."; // ⬅️ تعديلك المطلوب
+        btn.innerText = "رجاء الانتظار...";
         grid.innerHTML = "";
 
-        let success = false;
+        let status = false;
 
-        // محاولة جلب الأخبار وتدوير المفاتيح تلقائياً
-        for (let i = 0; i < keys.length; i++) {
-            const currentKey = keys[keyIndex % keys.length];
-            // إضافة v=Date.now لجلب أخبار اللحظة وعدم التكرار
-            const url = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=10&apikey=${currentKey}&v=${Date.now()}`;
-            const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+        // محاولة اختراق الحواجز باستخدام تدوير المفاتيح
+        for (let attempt = 0; attempt < vault.length; attempt++) {
+            const key = vault[activeIndex % vault.length];
+            // رابط مخادع يحتوي على قيم متغيرة لمنع الكاش
+            const rawUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=ar&max=10&apikey=${key}&hash=${Math.random()}`;
+            
+            // 🚀 استخدام وسيط كسر الحماية الاحترافي
+            const bypassUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rawUrl)}&timestamp=${Date.now()}`;
 
             try {
-                const response = await fetch(proxy);
-                const result = await response.json();
-                const data = JSON.parse(result.contents);
+                const response = await fetch(bypassUrl);
+                const data = await response.json();
+                const payload = JSON.parse(data.contents);
 
-                if (data.articles && data.articles.length > 0) {
-                    displayArticles(data.articles);
-                    success = true;
+                if (payload.articles && payload.articles.length > 0) {
+                    draw(payload.articles);
+                    status = true;
                     break; 
                 }
-            } catch (err) {
-                console.log("محاولة مفتاح آخر...");
-                keyIndex++; // الانتقال للمفتاح التالي في صمت
+            } catch (e) {
+                console.log("Switching Key...");
+                activeIndex++; // تغيير المفتاح فوراً عند أي فشل
             }
         }
 
-        if (!success) {
-            grid.innerHTML = `<div class="error-area">عذراً، لا يمكن جلب أخبار جديدة حالياً. يرجى المحاولة بعد قليل.</div>`;
+        if (!status) {
+            grid.innerHTML = `<p style="padding:50px; grid-column:1/-1">عذراً، لم نتمكن من جلب الأخبار. يرجى المحاولة لاحقاً.</p>`;
         }
 
         btn.disabled = false;
         btn.innerText = "🔄 تحديث الأخبار الآن";
     }
 
-    function displayArticles(articles) {
+    function draw(items) {
         const grid = document.getElementById("news-grid");
-        articles.forEach(item => {
-            const card = `
+        items.forEach(item => {
+            grid.innerHTML += `
                 <div class="card">
                     <img class="card-img" src="${item.image || 'https://via.placeholder.com/400x200?text=News'}" alt="img">
                     <div class="card-body">
                         <span class="card-source">${item.source.name}</span>
                         <h3 class="card-title"><a href="${item.url}" target="_blank">${item.title}</a></h3>
                     </div>
-                    <div class="card-footer">
-                        نشر في: ${new Date(item.publishedAt).toLocaleDateString('ar-EG')}
-                    </div>
+                    <div class="card-footer">📍 تحديث مباشر</div>
                 </div>`;
-            grid.innerHTML += card;
         });
     }
 
-    // التشغيل عند الدخول للموقع
-    window.onload = refreshNews;
+    window.onload = forceFetch;
 </script>
 
 </body>
